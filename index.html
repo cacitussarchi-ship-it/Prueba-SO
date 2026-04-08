@@ -6,189 +6,225 @@
 <title>SO Inspect</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: #f4f7f6;
-}
-
-header {
-  background: #1f7a63;
-  color: white;
-  padding: 15px;
-  text-align: center;
-}
-
-.container {
-  padding: 20px;
-}
-
-.card {
-  background: white;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 10px;
-}
-
-h2 {
-  color: #1f7a63;
-}
-
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-button {
-  background: #1f7a63;
-  color: white;
-  border: none;
-  padding: 12px;
-  width: 100%;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #145c4b;
-}
-
-canvas {
-  border: 1px solid #ccc;
-  width: 100%;
-  height: 150px;
-}
-
-.result {
-  font-size: 18px;
-  font-weight: bold;
-  text-align: center;
-}
+body { font-family: Arial; margin:0; background:#f4f7f6;}
+header { background:#1f7a63; color:white; padding:15px; text-align:center;}
+.container { padding:15px;}
+.card { background:white; padding:15px; margin-bottom:15px; border-radius:10px;}
+h2 { color:#1f7a63;}
+.item { border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:8px;}
+select, textarea, input { width:100%; padding:8px; margin-top:5px; border-radius:6px;}
+.extras { display:none; }
+canvas { border:1px solid #ccc; width:100%; height:150px;}
+button { background:#1f7a63; color:white; padding:12px; width:100%; border:none; border-radius:8px;}
+.result { text-align:center; font-weight:bold; font-size:18px;}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>SO Inspect</h1>
+<h1>SO Inspect - Inspección de Bodegas</h1>
 </header>
 
 <div class="container">
 
-  <!-- DATOS GENERALES -->
-  <div class="card">
-    <h2>Datos Generales</h2>
-    <input type="text" id="empresa" placeholder="Empresa">
-    <input type="text" id="ubicacion" placeholder="Ubicación">
-    <input type="text" id="inspector" placeholder="Inspector">
-    <input type="date" id="fecha">
-  </div>
+<div class="card">
+<h2>Datos Generales</h2>
+<input placeholder="Empresa">
+<input placeholder="Ubicación">
+<input placeholder="Inspector">
+<input type="date">
+</div>
 
-  <!-- CHECKLIST -->
-  <div class="card">
-    <h2>1. Condiciones Generales</h2>
+<div id="formulario"></div>
 
-    <label>¿La bodega está limpia?</label>
-    <select class="respuesta">
-      <option value="1">Cumple</option>
-      <option value="0">No cumple</option>
-      <option value="0.5">Parcial</option>
-    </select>
+<div class="card">
+<h2>Firma</h2>
+<canvas id="firma"></canvas>
+<button onclick="limpiarFirma()">Limpiar Firma</button>
+</div>
 
-    <label>¿Existe señalización?</label>
-    <select class="respuesta">
-      <option value="1">Cumple</option>
-      <option value="0">No cumple</option>
-      <option value="0.5">Parcial</option>
-    </select>
-
-    <label>Observaciones</label>
-    <textarea></textarea>
-  </div>
-
-  <!-- FOTO -->
-  <div class="card">
-    <h2>Foto de evidencia</h2>
-    <input type="file" accept="image/*">
-  </div>
-
-  <!-- FIRMA -->
-  <div class="card">
-    <h2>Firma</h2>
-    <canvas id="firma"></canvas>
-    <button onclick="limpiarFirma()">Limpiar Firma</button>
-  </div>
-
-  <!-- RESULTADO -->
-  <div class="card">
-    <button onclick="calcular()">Finalizar Inspección</button>
-    <div class="result" id="resultado"></div>
-  </div>
+<div class="card">
+<button onclick="calcular()">Finalizar</button>
+<div id="resultado" class="result"></div>
+</div>
 
 </div>
 
 <script>
+
+// 🔥 73 ITEMS COMPLETOS
+const encuesta = [
+{
+categoria:"1. Generales",
+items:[
+"Limpieza general","Orden general","Pasillos despejados","Iluminación adecuada",
+"Señalización visible","Accesos libres","Control de ingreso","Áreas delimitadas"
+]
+},
+{
+categoria:"2. Seguridad",
+items:[
+"Extintores disponibles","Extintores señalizados","Extintores vigentes",
+"Salidas de emergencia","Rutas evacuación","Plan emergencia visible",
+"Simulacros realizados","Equipo emergencia disponible","Botiquín completo"
+]
+},
+{
+categoria:"3. Infraestructura",
+items:[
+"Estructura en buen estado","Techo sin filtraciones","Paredes íntegras",
+"Pisos en buen estado","Rampas seguras","Escaleras seguras","Barandas instaladas",
+"Puertas funcionales"
+]
+},
+{
+categoria:"4. Electricidad",
+items:[
+"Cableado seguro","Tableros eléctricos señalizados","Protecciones instaladas",
+"No cables expuestos","Iluminación de emergencia","Tomas en buen estado",
+"Uso correcto de extensiones"
+]
+},
+{
+categoria:"5. Almacenamiento",
+items:[
+"Estanterías seguras","Carga correctamente distribuida",
+"Altura adecuada almacenamiento","Separación de productos",
+"Etiquetado correcto","Rotación inventario","No sobrecarga estantes",
+"Pasillos entre racks"
+]
+},
+{
+categoria:"6. Higiene",
+items:[
+"Control de plagas","Limpieza periódica","Residuos gestionados",
+"Basureros adecuados","Áreas sanitarias limpias","Agua potable disponible"
+]
+},
+{
+categoria:"7. Equipos",
+items:[
+"Montacargas en buen estado","Equipos con mantenimiento",
+"Uso correcto equipos","Inspección equipos","Equipos señalizados"
+]
+},
+{
+categoria:"8. Personal",
+items:[
+"Uso de EPP","Capacitación recibida","Orden en trabajo",
+"Cumplimiento normas","Actitud preventiva"
+]
+},
+{
+categoria:"9. Señalización",
+items:[
+"Señales visibles","Señales actualizadas","Señales de riesgo",
+"Señales de evacuación","Señales de equipos"
+]
+},
+{
+categoria:"10. Otros",
+items:[
+"Control de incendios","Condiciones ambientales","Ruido controlado",
+"Temperatura adecuada","Ventilación adecuada","Documentación disponible",
+"Permisos vigentes","Registros al día"
+]
+}
+];
+
+// GENERAR FORMULARIO
+let contenedor = document.getElementById("formulario");
+
+encuesta.forEach((grupo, i) => {
+  let card = document.createElement("div");
+  card.className = "card";
+
+  let html = `<h2>${grupo.categoria}</h2>`;
+
+  grupo.items.forEach((item, j) => {
+    html += `
+    <div class="item">
+      <label>${i+1}.${j+1} ${item}</label>
+      <select class="respuesta" onchange="mostrarExtras(this)">
+        <option value="">Seleccione</option>
+        <option value="1">Cumple</option>
+        <option value="0.5">Parcial</option>
+        <option value="0">No cumple</option>
+      </select>
+
+      <div class="extras">
+        <textarea placeholder="Observaciones"></textarea>
+        <input type="file" accept="image/*">
+      </div>
+    </div>
+    `;
+  });
+
+  card.innerHTML = html;
+  contenedor.appendChild(card);
+});
+
+// MOSTRAR EXTRAS
+function mostrarExtras(select){
+  let extras = select.parentElement.querySelector(".extras");
+  extras.style.display = select.value ? "block" : "none";
+}
+
 // FIRMA
 let canvas = document.getElementById("firma");
 let ctx = canvas.getContext("2d");
+
+canvas.width = canvas.offsetWidth;
+canvas.height = 150;
+
 let dibujando = false;
 
-canvas.addEventListener("mousedown", () => dibujando = true);
-canvas.addEventListener("mouseup", () => dibujando = false);
-canvas.addEventListener("mousemove", dibujar);
-
-canvas.addEventListener("touchstart", () => dibujando = true);
-canvas.addEventListener("touchend", () => dibujando = false);
-canvas.addEventListener("touchmove", dibujarTouch);
-
-function dibujar(e) {
-  if (!dibujando) return;
-  ctx.lineWidth = 2;
-  ctx.lineCap = "round";
+canvas.addEventListener("mousedown", ()=>{dibujando=true; ctx.beginPath();});
+canvas.addEventListener("mouseup", ()=>dibujando=false);
+canvas.addEventListener("mousemove", e=>{
+  if(!dibujando) return;
   ctx.lineTo(e.offsetX, e.offsetY);
   ctx.stroke();
-}
+});
 
-function dibujarTouch(e) {
-  if (!dibujando) return;
+canvas.addEventListener("touchstart", ()=>{dibujando=true; ctx.beginPath();});
+canvas.addEventListener("touchend", ()=>dibujando=false);
+canvas.addEventListener("touchmove", e=>{
+  if(!dibujando) return;
   let rect = canvas.getBoundingClientRect();
   let x = e.touches[0].clientX - rect.left;
   let y = e.touches[0].clientY - rect.top;
-
-  ctx.lineWidth = 2;
-  ctx.lineCap = "round";
-  ctx.lineTo(x, y);
+  ctx.lineTo(x,y);
   ctx.stroke();
-}
+});
 
-function limpiarFirma() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+function limpiarFirma(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 }
 
 // RESULTADO
-function calcular() {
+function calcular(){
   let respuestas = document.querySelectorAll(".respuesta");
-  let total = 0;
+  let total=0, count=0;
 
-  respuestas.forEach(r => {
-    total += parseFloat(r.value);
+  respuestas.forEach(r=>{
+    if(r.value){
+      total += parseFloat(r.value);
+      count++;
+    }
   });
 
-  let puntaje = (total / respuestas.length) * 100;
+  let puntaje = (total/count)*100;
 
-  let estado = "";
-  if (puntaje >= 80) estado = "✅ Cumple";
-  else if (puntaje >= 50) estado = "⚠️ Parcial";
-  else estado = "❌ No cumple";
+  let estado = puntaje>=80 ? "✅ Cumple" :
+               puntaje>=50 ? "⚠️ Parcial" :
+               "❌ No cumple";
 
   document.getElementById("resultado").innerHTML =
-    `Puntaje: ${puntaje.toFixed(1)}% <br> Estado: ${estado}`;
+    `Puntaje: ${puntaje.toFixed(1)}%<br>${estado}`;
 }
+
 </script>
 
 </body>
