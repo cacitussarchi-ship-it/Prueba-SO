@@ -1,231 +1,335 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SO Inspect</title>
-
-<style>
-body { font-family: Arial; margin:0; background:#f4f7f6;}
-header { background:#1f7a63; color:white; padding:15px; text-align:center;}
-.container { padding:15px;}
-.card { background:white; padding:15px; margin-bottom:15px; border-radius:10px;}
-h2 { color:#1f7a63;}
-.item { border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:8px;}
-select, textarea, input { width:100%; padding:8px; margin-top:5px; border-radius:6px;}
-.extras { display:none; }
-canvas { border:1px solid #ccc; width:100%; height:150px;}
-button { background:#1f7a63; color:white; padding:12px; width:100%; border:none; border-radius:8px;}
-.result { text-align:center; font-weight:bold; font-size:18px;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspección de Bodegas - Salud Ocupacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados para impresión */
+        @media print {
+            body { background-color: white; }
+            .no-print { display: none !important; }
+            .print-border { border: 1px solid #e5e7eb; padding: 10px; margin-bottom: 10px; break-inside: avoid; }
+            input, textarea { border: none !important; resize: none; }
+        }
+        .radio-custom:checked + label { background-color: #3b82f6; color: white; border-color: #3b82f6; }
+        .radio-custom-5:checked + label { background-color: #eab308; color: white; border-color: #eab308; }
+        .radio-custom-0:checked + label { background-color: #ef4444; color: white; border-color: #ef4444; }
+    </style>
 </head>
+<body class="bg-gray-100 text-gray-800 font-sans p-4 md:p-8">
 
-<body>
+    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-lg overflow-hidden">
+        
+        <div class="bg-blue-800 text-white p-6 text-center">
+            <h1 class="text-3xl font-bold">INSPECCIÓN DE BODEGAS</h1>
+            <h2 class="text-xl mt-2">Salud Ocupacional y Manejo de Agroquímicos</h2>
+        </div>
 
-<header>
-<h1>SO Inspect - Inspección de Bodegas</h1>
-</header>
+        <form id="inspectionForm" class="p-6">
+            
+            <section class="mb-8 print-border">
+                <h3 class="text-xl font-semibold border-b-2 border-blue-800 pb-2 mb-4 text-blue-800">DATOS GENERALES</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Fecha de Inspección</label>
+                        <input type="date" id="fecha" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Bodega</label>
+                        <input type="text" id="bodega" placeholder="Ej. CEDI CENTRAL ALAJUELA" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Nombre del Bodeguero</label>
+                        <input type="text" id="bodeguero" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Encargado o Regente</label>
+                        <input type="text" id="encargado" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2" required>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700">Realizó (Inspector)</label>
+                        <input type="text" id="inspector" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2" required>
+                    </div>
+                </div>
+            </section>
 
-<div class="container">
+            <div class="bg-blue-50 p-4 rounded-md mb-8 text-sm text-blue-800 border border-blue-200">
+                <strong>Pasos a seguir:</strong> Asigne un valor para cada observación: <strong>10 (Aceptable)</strong>, <strong>5 (Requiere mejora)</strong>, <strong>0 (Inaceptable)</strong>. Agregue comentarios, responsables y fechas según corresponda.
+            </div>
 
-<div class="card">
-<h2>Datos Generales</h2>
-<input placeholder="Empresa">
-<input placeholder="Ubicación">
-<input placeholder="Inspector">
-<input type="date">
-</div>
+            <div id="questionsContainer"></div>
 
-<div id="formulario"></div>
+            <div class="mt-8 flex flex-col md:flex-row justify-end gap-4 no-print border-t pt-6">
+                <button type="button" onclick="window.print()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded shadow">
+                    Imprimir / Guardar PDF
+                </button>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow">
+                    Calcular Resultados
+                </button>
+            </div>
+        </form>
 
-<div class="card">
-<h2>Firma</h2>
-<canvas id="firma"></canvas>
-<button onclick="limpiarFirma()">Limpiar Firma</button>
-</div>
+        <div id="resultsSection" class="hidden p-6 bg-gray-50 border-t-4 border-blue-800 mt-6">
+            <h3 class="text-2xl font-bold text-center mb-4">RESULTADO DE LA INSPECCIÓN</h3>
+            
+            <div class="flex justify-center mb-6">
+                <div id="scoreCircle" class="w-40 h-40 rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg border-4 border-white">
+                    <span id="scorePercentage" class="text-4xl">0%</span>
+                    <span id="scorePoints" class="text-sm mt-1">0 / 0 Puntos</span>
+                </div>
+            </div>
 
-<div class="card">
-<button onclick="calcular()">Finalizar</button>
-<div id="resultado" class="result"></div>
-</div>
+            <div id="scoreLevel" class="text-center text-xl font-bold mb-4 uppercase tracking-wider"></div>
+            <p id="scoreDescription" class="text-center text-gray-600 max-w-2xl mx-auto"></p>
+        </div>
 
-</div>
-
-<script>
-
-// 🔥 73 ITEMS COMPLETOS
-const encuesta = [
-{
-categoria:"1. Generales",
-items:[
-"Limpieza general","Orden general","Pasillos despejados","Iluminación adecuada",
-"Señalización visible","Accesos libres","Control de ingreso","Áreas delimitadas"
-]
-},
-{
-categoria:"2. Seguridad",
-items:[
-"Extintores disponibles","Extintores señalizados","Extintores vigentes",
-"Salidas de emergencia","Rutas evacuación","Plan emergencia visible",
-"Simulacros realizados","Equipo emergencia disponible","Botiquín completo"
-]
-},
-{
-categoria:"3. Infraestructura",
-items:[
-"Estructura en buen estado","Techo sin filtraciones","Paredes íntegras",
-"Pisos en buen estado","Rampas seguras","Escaleras seguras","Barandas instaladas",
-"Puertas funcionales"
-]
-},
-{
-categoria:"4. Electricidad",
-items:[
-"Cableado seguro","Tableros eléctricos señalizados","Protecciones instaladas",
-"No cables expuestos","Iluminación de emergencia","Tomas en buen estado",
-"Uso correcto de extensiones"
-]
-},
-{
-categoria:"5. Almacenamiento",
-items:[
-"Estanterías seguras","Carga correctamente distribuida",
-"Altura adecuada almacenamiento","Separación de productos",
-"Etiquetado correcto","Rotación inventario","No sobrecarga estantes",
-"Pasillos entre racks"
-]
-},
-{
-categoria:"6. Higiene",
-items:[
-"Control de plagas","Limpieza periódica","Residuos gestionados",
-"Basureros adecuados","Áreas sanitarias limpias","Agua potable disponible"
-]
-},
-{
-categoria:"7. Equipos",
-items:[
-"Montacargas en buen estado","Equipos con mantenimiento",
-"Uso correcto equipos","Inspección equipos","Equipos señalizados"
-]
-},
-{
-categoria:"8. Personal",
-items:[
-"Uso de EPP","Capacitación recibida","Orden en trabajo",
-"Cumplimiento normas","Actitud preventiva"
-]
-},
-{
-categoria:"9. Señalización",
-items:[
-"Señales visibles","Señales actualizadas","Señales de riesgo",
-"Señales de evacuación","Señales de equipos"
-]
-},
-{
-categoria:"10. Otros",
-items:[
-"Control de incendios","Condiciones ambientales","Ruido controlado",
-"Temperatura adecuada","Ventilación adecuada","Documentación disponible",
-"Permisos vigentes","Registros al día"
-]
-}
-];
-
-// GENERAR FORMULARIO
-let contenedor = document.getElementById("formulario");
-
-encuesta.forEach((grupo, i) => {
-  let card = document.createElement("div");
-  card.className = "card";
-
-  let html = `<h2>${grupo.categoria}</h2>`;
-
-  grupo.items.forEach((item, j) => {
-    html += `
-    <div class="item">
-      <label>${i+1}.${j+1} ${item}</label>
-      <select class="respuesta" onchange="mostrarExtras(this)">
-        <option value="">Seleccione</option>
-        <option value="1">Cumple</option>
-        <option value="0.5">Parcial</option>
-        <option value="0">No cumple</option>
-      </select>
-
-      <div class="extras">
-        <textarea placeholder="Observaciones"></textarea>
-        <input type="file" accept="image/*">
-      </div>
     </div>
-    `;
-  });
 
-  card.innerHTML = html;
-  contenedor.appendChild(card);
-});
+    <script>
+        // Datos extraídos del archivo proporcionado
+        const dataConfig = [
+            {
+                category: "2. UBICACIÓN",
+                items: [
+                    "Guardar una distancia mínima de 3 metros del límite de propiedad y de la vía pública.",
+                    "Guardar una distancia mínima de 3 metros de otras edificaciones existentes en el mismo terreno (excepto afines).",
+                    "Estar ubicados frente a vía pública o contar con un camino de acceso de ancho no menor de 5 metros.",
+                    "Guardar una distancia mínima de 10 metros del limite de propiedad, vía pública u otras edificaciones (según corresponda).",
+                    "Protección de las fuentes de agua superficiales o subterráneas (distancias según Ley Forestal).",
+                    "No ubicarse a menos de 50 metros de un centro educativo, hospital o clínica."
+                ]
+            },
+            {
+                category: "3. CONDICIONES FISICO SANITARIAS",
+                items: [
+                    "Pisos, paredes, mezanines y estructuras internas resistentes al fuego, lisos, no porosos y que no se reblandezcan.",
+                    "Recipiente vacío para casos de derrames y dos sacos con materia absorbente, debidamente rotulados.",
+                    "Residuos de derrames enterrados a más de 40 cm de profundidad, lejos de fuentes de agua (si aplica a la zona).",
+                    "Pisos con un desnivel del 1%, dirigido hacia el sistema de retención de derrames.",
+                    "Techos con una altura mínima de 2.5 metros, medidos del piso al cielo raso o cercha.",
+                    "Área de ventilación natural, no inferior al 20% de la superficie del piso.",
+                    "Existencia de extintores tipo ABC, en buen estado, ubicados estratégicamente cada 125 m2.",
+                    "Instalaciones eléctricas entubadas.",
+                    "Separación de oficinas y áreas de expendio de la zona de almacenamiento (mín. 1.5m distancia, 1.3m altura).",
+                    "Servicios sanitarios y duchas para el personal, en buenas condiciones de funcionamiento y limpieza.",
+                    "Disponibilidad y uso adecuado del equipo de protección personal (carga, descarga, derrames).",
+                    "Existencia de duchas de emergencia y fuente lavaojos, debidamente rotuladas y accesibles.",
+                    "Separación de las áreas de comedor y de trabajo."
+                ]
+            },
+            {
+                category: "4. ALMACENAMIENTO",
+                items: [
+                    "Los estantes deben ser de material resistente al fuego e impermeable.",
+                    "El almacenamiento en el estante debe permitir la circulación interna del aire.",
+                    "La altura máxima para colocar los productos no mayor de las 3/4 partes de la altura total del establecimiento.",
+                    "No deben existir instalaciones descubiertas o iluminación artificial sobre los estantes (deben estar sobre pasillos).",
+                    "Productos identificados con etiquetas, agrupados por afinidad químico-física y grado de toxicidad.",
+                    "Productos inflamables separados por una pared incombustible (resistencia mín. al fuego de 1 hora).",
+                    "Separación entre estantes y pared: 25 cm (locales hasta 200m2) o 50 cm (locales > 200m2).",
+                    "Pasillos entre estibas o estantes iguales o mayores a 80 cm.",
+                    "Si es zona inundable, agroquímicos colocados a una altura 20% mayor que el nivel máximo de inundación."
+                ]
+            },
+            {
+                category: "5. ORGANIZACIÓN DEL TRABAJO",
+                items: [
+                    "Personal de carga/descarga utiliza ropa de trabajo (overol/camisa manga larga) y delantal impermeable.",
+                    "Personal de sección de venta utiliza camisa manga larga u overol de tela.",
+                    "Personal sometido a examen médico pre-empleo y periódico.",
+                    "Análisis de colinesterasa refrendado por microbiólogo y enviado a Sustancias Tóxicas.",
+                    "Personal entrenado por Ing. Agrónomo regente en manejo seguro de plaguicidas.",
+                    "Rótulos claros sobre riesgos asociados a los agroquímicos.",
+                    "Hojas de Seguridad en español de los productos almacenados.",
+                    "Botiquín de emergencias acorde a riesgos y personal capacitado en su uso.",
+                    "Rótulo visible con teléfonos de emergencias (Intoxicaciones, Hospital, Cruz Roja, Bomberos).",
+                    "Producto deteriorado o sin etiqueta retirado, aislado y devuelto para correcta disposición.",
+                    "Desechos y envases tratados según Plan de Manejo de Desechos de la Empresa.",
+                    "Los trabajadores NO se llevan la ropa de trabajo ni EPP a su domicilio.",
+                    "Prohibido comer, fumar, beber en las áreas de venta y almacenamiento."
+                ]
+            },
+            {
+                category: "6. ASPECTOS DE REGENCIA MAG",
+                items: [
+                    "Permiso de funcionamiento del Ministerio de Salud vigente.",
+                    "Patentes municipales en lugar visible.",
+                    "Certificados del Colegio de Ingenieros Agrónomos vigentes y visibles.",
+                    "Personal de bodega con curso vigente sobre Uso seguro de Plaguicidas (MAG).",
+                    "Informes mensuales del Colegio de Ingenieros Agrónomos al día.",
+                    "Libro de productos restringidos actualizado.",
+                    "Archivados los informes de visitas MAG, Salud, Colegio Ingenieros.",
+                    "Archivo de Hojas de Seguridad (MSDS) de cada producto almacenado.",
+                    "Productos separados y almacenados por clase.",
+                    "Pasillos libres y demarcados.",
+                    "Bodega presenta la debida rotulación.",
+                    "No se encuentran productos en mal estado, derramados o rotos.",
+                    "No se encuentran productos vencidos.",
+                    "Envases plásticos con triple lavado recibidos y almacenados en lugar seguro en bolsa transparente.",
+                    "Orden y limpieza general aceptable.",
+                    "Equipo de protección personal en buenas condiciones.",
+                    "Equipo de recolección de derrames en buenas condiciones.",
+                    "Bodeguero se realiza examen de colinesterasa cada 3 meses y lleva archivo."
+                ]
+            },
+            {
+                category: "7. TRANSPORTE DE AGROQUÍMICOS",
+                items: [
+                    "No se transportan plaguicidas en la cabina del conductor junto a pasajeros.",
+                    "No se transportan plaguicidas junto a ropa o alimentos.",
+                    "Al cargar/descargar se verifica que envases estén en buen estado, etiquetados y cerrados.",
+                    "No se come, fuma o bebe mientras se carga o descarga.",
+                    "La carga está bien asegurada.",
+                    "Estiba uniforme (polvos/granulados sobre líquidos, cajas sobre tambores).",
+                    "Vehículo en buen estado físico y mecánico.",
+                    "No se deja el vehículo cargado sin vigilancia.",
+                    "Vehículo identificado con el nombre de la empresa.",
+                    "Se mantiene equipo de protección en el vehículo.",
+                    "Se mantiene kit anti derrame y extintor en el vehículo.",
+                    "Cuenta con hojas MSDS del material que transporta.",
+                    "Chofer cuenta con licencia al día y adecuada para el vehículo.",
+                    "Vehículo cuenta con RTV y Marchamo al día."
+                ]
+            },
+            {
+                category: "8. OBLIGACIONES",
+                items: [
+                    "Representante legal y responsable técnico hacen cumplir las disposiciones de la reglamentación."
+                ]
+            }
+        ];
 
-// MOSTRAR EXTRAS
-function mostrarExtras(select){
-  let extras = select.parentElement.querySelector(".extras");
-  extras.style.display = select.value ? "block" : "none";
-}
+        let questionCounter = 0;
 
-// FIRMA
-let canvas = document.getElementById("firma");
-let ctx = canvas.getContext("2d");
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            let htmlContent = '';
 
-canvas.width = canvas.offsetWidth;
-canvas.height = 150;
+            dataConfig.forEach((section) => {
+                htmlContent += `
+                <section class="mb-8 print-border">
+                    <h3 class="text-lg font-bold bg-blue-100 text-blue-900 p-3 rounded mb-4 shadow-sm">${section.category}</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left text-gray-600">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                <tr>
+                                    <th scope="col" class="px-4 py-3 w-1/2">Requerimiento</th>
+                                    <th scope="col" class="px-4 py-3 w-1/6 text-center">Puntaje</th>
+                                    <th scope="col" class="px-4 py-3 w-1/6">Observaciones</th>
+                                    <th scope="col" class="px-4 py-3">Responsable/Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
 
-let dibujando = false;
+                section.items.forEach((item) => {
+                    questionCounter++;
+                    htmlContent += `
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-3 font-medium text-gray-900">${questionCounter}. ${item}</td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex justify-center gap-2">
+                                    <div>
+                                        <input type="radio" id="q${questionCounter}_10" name="q${questionCounter}" value="10" class="hidden radio-custom" required>
+                                        <label for="q${questionCounter}_10" class="cursor-pointer border rounded px-2 py-1 text-xs font-bold hover:bg-blue-50" title="Aceptable">10</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" id="q${questionCounter}_5" name="q${questionCounter}" value="5" class="hidden radio-custom-5">
+                                        <label for="q${questionCounter}_5" class="cursor-pointer border rounded px-2 py-1 text-xs font-bold hover:bg-yellow-50" title="Requiere Mejora">5</label>
+                                    </div>
+                                    <div>
+                                        <input type="radio" id="q${questionCounter}_0" name="q${questionCounter}" value="0" class="hidden radio-custom-0">
+                                        <label for="q${questionCounter}_0" class="cursor-pointer border rounded px-2 py-1 text-xs font-bold hover:bg-red-50" title="Inaceptable">0</label>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-2">
+                                <textarea name="obs${questionCounter}" class="w-full border rounded p-1 text-xs" rows="2" placeholder="Notas..."></textarea>
+                            </td>
+                            <td class="px-4 py-2">
+                                <input type="text" name="resp${questionCounter}" class="w-full border rounded p-1 text-xs mb-1" placeholder="Responsable">
+                                <input type="date" name="fecha${questionCounter}" class="w-full border rounded p-1 text-xs">
+                            </td>
+                        </tr>
+                    `;
+                });
 
-canvas.addEventListener("mousedown", ()=>{dibujando=true; ctx.beginPath();});
-canvas.addEventListener("mouseup", ()=>dibujando=false);
-canvas.addEventListener("mousemove", e=>{
-  if(!dibujando) return;
-  ctx.lineTo(e.offsetX, e.offsetY);
-  ctx.stroke();
-});
+                htmlContent += `
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                `;
+            });
 
-canvas.addEventListener("touchstart", ()=>{dibujando=true; ctx.beginPath();});
-canvas.addEventListener("touchend", ()=>dibujando=false);
-canvas.addEventListener("touchmove", e=>{
-  if(!dibujando) return;
-  let rect = canvas.getBoundingClientRect();
-  let x = e.touches[0].clientX - rect.left;
-  let y = e.touches[0].clientY - rect.top;
-  ctx.lineTo(x,y);
-  ctx.stroke();
-});
+            container.innerHTML = htmlContent;
+        }
 
-function limpiarFirma(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-}
+        function calculateResults(e) {
+            e.preventDefault();
+            
+            let totalPoints = 0;
+            const maxPoints = questionCounter * 10; 
+            
+            for (let i = 1; i <= questionCounter; i++) {
+                const radios = document.getElementsByName(`q${i}`);
+                for (let radio of radios) {
+                    if (radio.checked) {
+                        totalPoints += parseInt(radio.value);
+                    }
+                }
+            }
 
-// RESULTADO
-function calcular(){
-  let respuestas = document.querySelectorAll(".respuesta");
-  let total=0, count=0;
+            const percentage = ((totalPoints / maxPoints) * 100).toFixed(1);
+            
+            displayResults(totalPoints, maxPoints, parseFloat(percentage));
+        }
 
-  respuestas.forEach(r=>{
-    if(r.value){
-      total += parseFloat(r.value);
-      count++;
-    }
-  });
+        function displayResults(points, max, percentage) {
+            const resultsSection = document.getElementById('resultsSection');
+            const scoreCircle = document.getElementById('scoreCircle');
+            const scorePercentage = document.getElementById('scorePercentage');
+            const scorePoints = document.getElementById('scorePoints');
+            const scoreLevel = document.getElementById('scoreLevel');
+            const scoreDescription = document.getElementById('scoreDescription');
 
-  let puntaje = (total/count)*100;
+            resultsSection.classList.remove('hidden');
+            scorePercentage.textContent = `${percentage}%`;
+            scorePoints.textContent = `${points} / ${max} Pts`;
 
-  let estado = puntaje>=80 ? "✅ Cumple" :
-               puntaje>=50 ? "⚠️ Parcial" :
-               "❌ No cumple";
+            // Lógica de validación basada en los parámetros del CSV
+            scoreCircle.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-green-500');
+            scoreLevel.classList.remove('text-red-600', 'text-yellow-600', 'text-green-600');
 
-  document.getElementById("resultado").innerHTML =
-    `Puntaje: ${puntaje.toFixed(1)}%<br>${estado}`;
-}
+            if (percentage <= 65) {
+                scoreCircle.classList.add('bg-red-500');
+                scoreLevel.classList.add('text-red-600');
+                scoreLevel.textContent = 'Nivel: INACEPTABLE';
+                scoreDescription.textContent = 'Las medidas de seguridad apenas se están cumpliendo, el nivel de cumplimiento no es satisfactorio y se requiere intervención inmediata.';
+            } else if (percentage > 65 && percentage < 90) {
+                scoreCircle.classList.add('bg-yellow-500');
+                scoreLevel.classList.add('text-yellow-600');
+                scoreLevel.textContent = 'Nivel: REGULAR';
+                scoreDescription.textContent = 'Las medidas de seguridad se están implementando, sin embargo, no se encuentran en un nivel óptimo. El cumplimiento debe ser mejorado.';
+            } else {
+                scoreCircle.classList.add('bg-green-500');
+                scoreLevel.classList.add('text-green-600');
+                scoreLevel.textContent = 'Nivel: ACEPTABLE';
+                scoreDescription.textContent = 'La gestión tiene un nivel de cumplimiento y madurez adecuado y está en vías de la excelencia. Se están cumpliendo con las medidas de seguridad correctas.';
+            }
 
-</script>
+            // Scroll hacia los resultados
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
 
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuestions();
+            document.getElementById('inspectionForm').addEventListener('submit', calculateResults);
+        });
+
+    </script>
 </body>
 </html>
