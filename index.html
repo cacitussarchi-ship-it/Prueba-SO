@@ -40,12 +40,18 @@
     </div>
 
     <div id="successModal">
-        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-8 text-center animate-in fade-in zoom-in duration-300">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-8 text-center relative animate-in fade-in zoom-in duration-300">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+
             <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-1">¡Inspección Finalizada!</h2>
-            <p class="text-gray-500 text-sm mb-6">El formulario se ha enviado correctamente.</p>
+            <p class="text-gray-500 text-sm mb-6">Datos sincronizados correctamente.</p>
             
             <div class="bg-gray-50 rounded-lg p-5 mb-6 border border-gray-200">
                 <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Resultado del Cumplimiento</p>
@@ -59,10 +65,14 @@
 
             <div class="space-y-3">
                 <a href="https://wa.me/50688068906?text=Hola,%20tengo%20una%20consulta%20referente%20al%20formulario%20de%20inspección" target="_blank" class="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow-md transition-transform hover:scale-[1.02]">
-                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
                     Escribir a WhatsApp
                 </a>
-                <button onclick="location.reload()" class="w-full text-gray-400 text-xs hover:underline uppercase tracking-widest font-bold py-2">Cerrar y Nueva Inspección</button>
+                <button onclick="closeModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-lg transition-colors">
+                    Regresar al Formulario (PDF/Imprimir)
+                </button>
+                <button onclick="location.reload()" class="w-full text-gray-400 text-[10px] hover:underline uppercase tracking-widest font-bold py-2">
+                    Cerrar sesión y Nueva Inspección
+                </button>
             </div>
         </div>
     </div>
@@ -91,10 +101,10 @@
                 </section>
 
                 <div class="bg-blue-50 p-5 rounded-lg mb-8 border border-blue-200 text-[11px] text-blue-900 leading-relaxed shadow-sm">
-                    <h4 class="font-black mb-3 uppercase border-b border-blue-200 pb-1 text-xs">1. GENERALES (Contexto Normativo)</h4>
+                    <h4 class="font-black mb-3 uppercase border-b border-blue-200 pb-1 text-xs text-blue-800">1. GENERALES (Contexto Normativo)</h4>
                     <p class="mb-2 italic">• Corresponde al Ministerio de Salud velar porque los establecimientos donde se expendan agroquímicos reúnan condiciones de seguridad para disminuir riesgos a la salud y al ambiente.</p>
                     <p class="mb-2">• Los plaguicidas son sustancias altamente tóxicas e inflamables; su manejo inadecuado causa daños graves.</p>
-                    <p>• <b>Instrucciones:</b> Evalúe cada punto con 10 (Aceptable), 5 (Mejora) o 0 (Inaceptable).</p>
+                    <p>• <b>Instrucciones:</b> Evalúe cada punto con 10 (Aceptable), 5 (Mejora) o 0 (Inaceptable). Use la cámara para documentar hallazgos.</p>
                 </div>
 
                 <div id="questionsContainer" class="space-y-6"></div>
@@ -102,12 +112,12 @@
                 <section class="mt-10 pt-8 border-t-2 print-border text-center">
                     <h3 class="font-bold text-blue-800 mb-4 uppercase text-sm tracking-widest">Firma del Inspector</h3>
                     <canvas id="signature-pad" width="400" height="180" class="bg-gray-50 mx-auto w-full max-w-md shadow-inner"></canvas>
-                    <button type="button" onclick="clearSignature()" class="mt-3 text-red-600 text-xs font-bold no-print uppercase tracking-tighter">Limpiar Trazo</button>
+                    <button type="button" onclick="clearSignature()" class="mt-3 text-red-600 text-xs font-bold no-print uppercase tracking-tighter hover:underline">Limpiar Trazo</button>
                 </section>
 
                 <div class="mt-10 flex justify-end gap-4 no-print border-t pt-8">
                     <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-all uppercase text-xs">PDF / Imprimir</button>
-                    <button type="submit" id="submitBtn" class="bg-blue-700 hover:bg-blue-800 text-white font-black py-3 px-12 rounded-lg shadow-xl transition-all uppercase text-sm tracking-widest">Calcular Evaluación</button>
+                    <button type="submit" id="submitBtn" class="bg-blue-700 hover:bg-blue-800 text-white font-black py-3 px-12 rounded-lg shadow-xl transition-all uppercase text-sm tracking-widest">Enviar y Calcular</button>
                 </div>
             </form>
         </div>
@@ -121,10 +131,16 @@
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 initSignaturePad();
+            } else {
+                alert("Credenciales incorrectas");
             }
         }
 
-        // --- LOS 75 ÍTEMS COMPLETOS DEL EXCEL ---
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+        }
+
+        // --- LISTADO DE LOS 75 ÍTEMS COMPLETOS ---
         const dataConfig = [
             { category: "2. UBICACIÓN", items: [
                 {n:1, t:"Distancia mínima de 3 metros del límite de propiedad y de la vía pública."},
@@ -229,7 +245,7 @@
                     <div class="bg-gray-100 p-3 font-bold text-blue-900 border-b text-[11px] uppercase tracking-widest">${sec.category}</div>
                     <div class="overflow-x-auto"><table class="w-full text-[11px] text-left">
                         <thead class="bg-gray-50 text-gray-400 border-b">
-                            <tr><th class="p-3 w-[45%]">Requerimiento</th><th class="p-3 text-center">Puntos</th><th class="p-3">Observación / Foto</th></tr>
+                            <tr><th class="p-3 w-[45%]">Requerimiento</th><th class="p-3 text-center">Pts</th><th class="p-3">Observación / Foto</th></tr>
                         </thead><tbody>`;
                 sec.items.forEach(item => {
                     let radios = `<div class="flex gap-1 justify-center">`;
@@ -244,9 +260,9 @@
                         <td class="p-3 align-top font-medium text-gray-700">${item.n}. ${item.t}</td>
                         <td class="p-3 align-top">${radios}</td>
                         <td class="p-3 align-top">
-                            <textarea class="w-full border rounded p-1 text-[10px] mb-1" rows="1" placeholder="Hallazgos..."></textarea>
-                            <label class="block bg-gray-50 text-gray-500 text-[9px] font-bold p-1 rounded border border-dashed border-gray-300 text-center cursor-pointer hover:bg-blue-50 no-print">
-                                📷 EVIDENCIA
+                            <textarea class="w-full border rounded p-1 text-[10px] mb-1 outline-none focus:ring-1 focus:ring-blue-300" rows="1" placeholder="Hallazgos..."></textarea>
+                            <label class="block bg-gray-50 text-gray-500 text-[9px] font-bold p-1 rounded border border-dashed border-gray-300 text-center cursor-pointer hover:bg-blue-50 no-print transition-colors">
+                                📷 FOTO
                                 <input type="file" accept="image/*" capture="environment" class="hidden">
                             </label>
                         </td>
@@ -278,17 +294,18 @@
         function end() { isDrawing = false; ctx.beginPath(); }
         function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-        // --- ENVIO Y CALCULO ---
+        // --- ENVÍO ---
         document.getElementById('inspectionForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.textContent = "PROCESANDO ENVÍO...";
+            btn.disabled = true; btn.textContent = "ENVIANDO...";
 
             let score = 0; let respuestasEnvio = {};
             for(let i=1; i<=qCountTotal; i++) {
                 const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                if(!sel) { alert("Falta evaluar el punto " + i); btn.disabled = false; return; }
-                const obs = document.querySelector(`input[name="q${i}"]`).closest('tr').querySelector('textarea').value;
+                if(!sel) { alert("Falta evaluar punto " + i); btn.disabled = false; return; }
+                const row = document.querySelector(`input[name="q${i}"]`).closest('tr');
+                const obs = row.querySelector('textarea').value;
                 score += parseInt(sel.value);
                 respuestasEnvio["q" + i] = { pts: parseInt(sel.value), obs: obs };
             }
@@ -296,7 +313,7 @@
             const pct = (score / (qCountTotal * 10)) * 100;
             let nivel = "", colorM = "";
             if(pct <= 65) { nivel = "INCUMPLE (INACEPTABLE)"; colorM = "bg-red-500 text-white"; }
-            else if(pct < 90) { nivel = "NECESITA MEJORAS (REGULAR)"; colorM = "bg-orange-500 text-white"; }
+            else if(pct < 90) { nivel = "REGULAR (MEJORABLE)"; colorM = "bg-orange-500 text-white"; }
             else { nivel = "CUMPLE (ACEPTABLE)"; colorM = "bg-green-600 text-white"; }
 
             const payload = {
@@ -309,9 +326,10 @@
             };
 
             try {
-                await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                // Envío asíncrono (no-cors para Google Scripts suele ser más rápido)
+                fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
                 
-                // Mostrar Modal de Éxito
+                // Mostrar Resultado
                 document.getElementById('modalScore').textContent = pct.toFixed(1) + "%";
                 const badge = document.getElementById('modalStatus');
                 badge.textContent = nivel;
@@ -319,9 +337,9 @@
                 document.getElementById('successModal').style.display = 'flex';
                 
             } catch (err) {
-                alert("Error crítico de conexión.");
+                alert("Error al enviar. Verifique conexión.");
             } finally {
-                btn.disabled = false; btn.textContent = "CALCULAR EVALUACIÓN";
+                btn.disabled = false; btn.textContent = "ENVIAR Y CALCULAR";
             }
         };
 
