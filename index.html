@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inspección de Bodegas - Salud Ocupacional</title>
+    <title>Inspección de Bodegas Completa - Salud Ocupacional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -13,27 +13,25 @@
             input, textarea { border: none !important; resize: none; }
             .accordion-content { display: block !important; }
         }
-        
         .color-radio input[type="radio"] { display: none; }
         .color-radio label {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 40px;
-            height: 40px;
-            border-radius: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             border: 2px solid transparent;
             transition: all 0.2s;
         }
         .color-radio input[type="radio"]:checked + label {
             transform: scale(1.1);
             border-color: #000;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        
         #signature-pad {
             border: 2px dashed #cbd5e1;
             border-radius: 8px;
@@ -47,257 +45,251 @@
     <div id="loginScreen" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
             <h2 class="text-2xl font-bold text-blue-800 mb-6">Acceso a Inspección</h2>
-            <div class="mb-4 text-left">
-                <label class="block text-sm font-medium text-gray-700">Usuario</label>
-                <input type="text" id="username" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <div class="mb-6 text-left">
-                <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-                <input type="password" id="password" class="mt-1 w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-            </div>
-            <p id="loginError" class="text-red-500 text-sm hidden mb-4">Usuario o contraseña incorrectos.</p>
-            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Ingresar
-            </button>
+            <input type="text" id="username" placeholder="Usuario" class="mb-4 w-full border border-gray-300 rounded-md p-2">
+            <input type="password" id="password" placeholder="Contraseña" class="mb-6 w-full border border-gray-300 rounded-md p-2">
+            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded">Ingresar</button>
         </div>
     </div>
 
     <div id="mainApp" class="hidden p-4 md:p-8 max-w-7xl mx-auto">
         <div class="bg-white shadow-xl rounded-lg overflow-hidden">
             <div class="bg-blue-800 text-white p-6 text-center">
-                <h1 class="text-3xl font-bold">INSPECCIÓN DE BODEGAS</h1>
-                <h2 class="text-xl mt-2">Salud Ocupacional</h2>
+                <h1 class="text-3xl font-bold uppercase">Inspección de Bodegas</h1>
+                <p class="mt-1">Salud Ocupacional - Formulario de Cumplimiento</p>
             </div>
 
             <form id="inspectionForm" class="p-6">
-                <section class="mb-8 print-border">
-                    <h3 class="text-xl font-semibold border-b-2 border-blue-800 pb-2 mb-4 text-blue-800">DATOS GENERALES</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Fecha de Inspección</label>
-                            <input type="date" class="mt-1 w-full rounded-md border-gray-300 border p-2" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Bodega</label>
-                            <input type="text" placeholder="Ej. CEDI CENTRAL" class="mt-1 w-full rounded-md border-gray-300 border p-2" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Nombre del Bodeguero</label>
-                            <input type="text" class="mt-1 w-full rounded-md border-gray-300 border p-2" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Encargado o Regente</label>
-                            <input type="text" class="mt-1 w-full rounded-md border-gray-300 border p-2" required>
-                        </div>
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700">Realizó (Inspector)</label>
-                            <input type="text" class="mt-1 w-full rounded-md border-gray-300 border p-2" required>
-                        </div>
-                    </div>
+                <section class="mb-8 print-border grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2 border-b pb-2 mb-2"><h3 class="font-bold text-blue-800">DATOS GENERALES</h3></div>
+                    <input type="text" placeholder="Fecha de Inspección" class="border p-2 rounded" required>
+                    <input type="text" placeholder="Bodega / Ubicación" class="border p-2 rounded" required>
+                    <input type="text" placeholder="Nombre del Bodeguero" class="border p-2 rounded" required>
+                    <input type="text" placeholder="Encargado o Regente" class="border p-2 rounded" required>
+                    <input type="text" placeholder="Inspector que realiza" class="border p-2 rounded md:col-span-2" required>
                 </section>
-
-                <div class="bg-blue-50 p-4 rounded-md mb-8 text-sm text-blue-800 border border-blue-200">
-                    <strong>Instrucciones:</strong> Califique cada punto: <span class="text-red-600 font-bold">0 (Inaceptable)</span>, <span class="text-orange-600 font-bold">5 (Requiere Mejora)</span> o <span class="text-green-600 font-bold">10 (Aceptable)</span>.
-                </div>
 
                 <div id="questionsContainer" class="space-y-4"></div>
 
-                <section class="mt-8 pt-6 border-t-2 border-gray-200 print-border">
-                    <h3 class="text-xl font-semibold text-blue-800 mb-4">Firma del Inspector</h3>
-                    <div class="flex flex-col items-center">
-                        <canvas id="signature-pad" width="400" height="200" class="bg-gray-50 w-full max-w-[400px]"></canvas>
-                        <button type="button" onclick="clearSignature()" class="mt-3 text-sm text-red-600 font-semibold hover:underline no-print">
-                            Limpiar Firma
-                        </button>
-                    </div>
+                <section class="mt-8 pt-6 border-t-2 print-border text-center">
+                    <h3 class="font-semibold text-blue-800 mb-4">Firma del Inspector</h3>
+                    <canvas id="signature-pad" width="400" height="180" class="bg-gray-50 mx-auto"></canvas>
+                    <button type="button" onclick="clearSignature()" class="mt-2 text-red-600 text-sm no-print">Limpiar Firma</button>
                 </section>
 
-                <div class="mt-8 flex flex-col md:flex-row justify-end gap-4 no-print border-t pt-6">
-                    <button type="button" onclick="window.print()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded shadow">
-                        Imprimir / Guardar PDF
-                    </button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded shadow">
-                        Calcular Resultados
-                    </button>
+                <div class="mt-8 flex justify-end gap-4 no-print border-t pt-6">
+                    <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-2 px-6 rounded">Imprimir/PDF</button>
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded">Calcular Resultados</button>
                 </div>
             </form>
 
-            <div id="resultsSection" class="hidden p-6 bg-gray-50 border-t-4 border-blue-800 mt-6">
-                <h3 class="text-2xl font-bold text-center mb-4">RESULTADO DE LA INSPECCIÓN</h3>
-                <div class="flex justify-center mb-6">
-                    <div id="scoreCircle" class="w-40 h-40 rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg border-4 border-white">
-                        <span id="scorePercentage" class="text-4xl">0%</span>
-                        <span id="scorePoints" class="text-sm mt-1">0 / 0 Puntos</span>
+            <div id="resultsSection" class="hidden p-6 bg-gray-50 border-t-4 border-blue-800">
+                <div class="flex flex-col items-center">
+                    <div id="scoreCircle" class="w-32 h-32 rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg">
+                        <span id="scorePercentage" class="text-3xl">0%</span>
                     </div>
+                    <h3 id="scoreLevel" class="text-2xl font-bold mt-4"></h3>
+                    <p id="scoreDescription" class="text-gray-600 text-center mt-2 max-w-xl"></p>
                 </div>
-                <div id="scoreLevel" class="text-center text-xl font-bold mb-4 uppercase tracking-wider"></div>
-                <p id="scoreDescription" class="text-center text-gray-600 max-w-2xl mx-auto"></p>
             </div>
         </div>
     </div>
 
     <script>
         function checkLogin() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            if (user === 'Admin' && pass === 'SOdevelomping') {
+            if (document.getElementById('username').value === 'Admin' && document.getElementById('password').value === 'SOdevelomping') {
                 document.getElementById('loginScreen').classList.add('hidden');
                 document.getElementById('mainApp').classList.remove('hidden');
                 initSignaturePad();
-            } else {
-                document.getElementById('loginError').classList.remove('hidden');
             }
         }
 
         const dataConfig = [
-            { category: "1. UBICACIÓN", items: ["Distancia mín. 3m del límite de propiedad/vía pública.", "Distancia mín. 3m de otras edificaciones.", "Acceso de ancho no menor de 5 metros.", "Protección de fuentes de agua (Ley Forestal).", "No estar a menos de 50m de centros educativos/salud."] },
-            { category: "2. CONDICIONES FISICO SANITARIAS", items: ["Pisos y paredes resistentes al fuego y lisos.", "Recipiente para derrames y sacos de absorbente rotulados.", "Desnivel de pisos (1%) hacia retención de derrames.", "Techos altura mín. 2.5m.", "Ventilación natural mín. 20% del área de piso.", "Extintores ABC vigentes cada 125m2.", "Instalaciones eléctricas entubadas.", "Duchas de emergencia y lavaojos accesibles."] },
-            { category: "3. ALMACENAMIENTO", items: ["Estantes de material incombustible e impermeable.", "Altura máx. no superior a 3/4 de la altura total.", "Productos agrupados por afinidad y etiquetados.", "Pasillos entre estantes iguales o mayores a 80cm.", "Separación entre estantes y pared (25cm o 50cm)."] },
-            { category: "4. ORGANIZACIÓN DEL TRABAJO", items: ["Personal con equipo de protección personal (EPP).", "Hojas de Seguridad (MSDS) disponibles.", "Botiquín de emergencias completo.", "Prohibido comer, fumar o beber en bodega.", "Desechos tratados según Plan de Manejo."] },
-            { category: "5. ASPECTOS LEGALES", items: ["Permiso de Funcionamiento vigente.", "Patente municipal visible.", "Registro de productos al día.", "Orden y limpieza general aceptable."] }
+            { category: "1. UBICACIÓN", items: [
+                "Distancia mínima de 3 metros del límite de propiedad y vía pública.",
+                "Distancia mínima de 3 metros de otras edificaciones en el mismo terreno.",
+                "Ubicados frente a vía pública o camino de acceso mayor a 5 metros.",
+                "Distancia mínima de 10 metros del límite de propiedad (según corresponda).",
+                "Protección de fuentes de agua superficiales o subterráneas (Ley Forestal).",
+                "No ubicarse a menos de 50 metros de centros educativos, hospitales o clínicas."
+            ]},
+            { category: "2. CONDICIONES FISICO SANITARIAS", items: [
+                "Pisos, paredes y estructuras resistentes al fuego, lisos y no porosos.",
+                "Pisos con desnivel del 1% hacia el sistema de retención de derrames.",
+                "Canales de retención con capacidad para el volumen del recipiente mayor + 10%.",
+                "Ausencia de drenajes directos al alcantarillado público o fuentes de agua.",
+                "Techos con altura mínima de 2.5 metros.",
+                "Área de ventilación natural no inferior al 20% de la superficie del piso.",
+                "Instalaciones eléctricas entubadas y en buen estado.",
+                "Lámparas protegidas contra roturas (envolventes).",
+                "Extintores tipo ABC de 10 lbs mínimo, cargados y señalizados.",
+                "Extintores ubicados estratégicamente cada 125 m2.",
+                "Duchas de emergencia y lavaojos debidamente rotulados y accesibles.",
+                "Servicios sanitarios y duchas para personal en condiciones óptimas.",
+                "Separación de áreas de oficina/expendio de la zona de almacenaje (mín 1.5m).",
+                "Paredes de oficinas resistentes al fuego y con altura mínima de 1.30m.",
+                "Área de comedor separada del área de trabajo.",
+                "Rotulación preventiva: No fumar, No comer, Peligro, etc."
+            ]},
+            { category: "3. ALMACENAMIENTO", items: [
+                "Estantes de material resistente al fuego e impermeable.",
+                "Estantes anclados o estables para evitar caídas.",
+                "Almacenamiento permite la circulación interna del aire.",
+                "Altura máxima de estiba no mayor a 3/4 partes de la altura total.",
+                "No iluminación artificial directamente sobre los productos.",
+                "Productos identificados con etiquetas originales y legibles.",
+                "Productos agrupados por afinidad (compatibilidad química).",
+                "Productos inflamables separados por pared incombustible.",
+                "Separación entre estantes y pared (25cm locales <200m2 / 50cm >200m2).",
+                "Pasillos entre estanterías iguales o mayores a 80 cm.",
+                "En zonas inundables, productos elevados 20% sobre nivel máx de inundación.",
+                "Tarimas o pallets en buen estado.",
+                "Orden y limpieza rigurosa en estanterías."
+            ]},
+            { category: "4. MANEJO DE DERRAMES Y DESECHOS", items: [
+                "Recipiente vacío para trasiego de emergencia disponible.",
+                "Dos sacos con materia absorbente (arena o arcilla) rotulados.",
+                "Pala y escoba de uso exclusivo para derrames.",
+                "Desechos y envases vacíos manejados según Plan de Manejo.",
+                "Área específica para aislamiento de productos dañados.",
+                "Personal capacitado en el uso del kit de derrames."
+            ]},
+            { category: "5. EQUIPO DE PROTECCIÓN PERSONAL (EPP)", items: [
+                "Disponibilidad de botas de hule.",
+                "Disponibilidad de guantes de nitrilo o neopreno.",
+                "Mascarillas con filtros para vapores orgánicos/polvos.",
+                "Lentes de seguridad o caretas faciales.",
+                "Gabachas o trajes protectores impermeables.",
+                "Uso efectivo del EPP durante carga/descarga.",
+                "EPP en buenas condiciones de limpieza y mantenimiento."
+            ]},
+            { category: "6. ORGANIZACIÓN Y SALUD", items: [
+                "Personal sometido a exámenes médicos periódicos.",
+                "Botiquín de emergencias con suministros básicos.",
+                "Teléfonos de emergencia visibles (Cruz Roja, Bomberos, 9-1-1).",
+                "Hojas de Seguridad (MSDS) disponibles y actualizadas.",
+                "Prohibición estricta de comer y fumar en el sitio.",
+                "Capacitación periódica en manejo de materiales peligrosos."
+            ]},
+            { category: "7. TRANSPORTE DE MATERIALES", items: [
+                "Materiales peligrosos no viajan en cabina con pasajeros.",
+                "No se transportan químicos junto a ropa o alimentos.",
+                "Verificación de envases cerrados y sin fugas antes de cargar.",
+                "Carga bien asegurada y estibada de forma uniforme.",
+                "Vehículo cuenta con RTV y Marchamo al día.",
+                "Chofer con licencia adecuada y vigente.",
+                "Vehículo con kit antiderrame y extintor básico.",
+                "Vehículo identificado con el nombre de la empresa.",
+                "Hojas MSDS presentes en el vehículo durante el traslado."
+            ]},
+            { category: "8. ASPECTOS ADMINISTRATIVOS", items: [
+                "Permiso Sanitario de Funcionamiento vigente.",
+                "Patente municipal al día y visible.",
+                "Bitácora de inspecciones anteriores disponible.",
+                "Plan de Emergencias actualizado."
+            ]}
         ];
 
-        // Escala simplificada: 0 (Rojo), 5 (Naranja), 10 (Verde)
-        const simplifiedScale = [
-            { val: 0, color: "#ef4444", label: "Inaceptable" },
-            { val: 5, color: "#f97316", label: "Mejora" },
-            { val: 10, color: "#16a34a", label: "Aceptable" }
+        const scale = [
+            { val: 0, color: "#ef4444", label: "0" },
+            { val: 5, color: "#f97316", label: "5" },
+            { val: 10, color: "#16a34a", label: "10" }
         ];
 
-        let totalQuestions = 0;
+        let totalQ = 0;
 
-        function renderQuestions() {
+        function render() {
             const container = document.getElementById('questionsContainer');
             let html = '';
-            let qIdx = 1;
-
+            let count = 1;
             dataConfig.forEach((sec, sIdx) => {
-                const secId = `sec-${sIdx}`;
-                html += `
-                <div class="border border-gray-200 rounded-md bg-white print-border">
-                    <button type="button" onclick="toggleSection('${secId}')" class="w-full text-left px-4 py-3 bg-blue-100 text-blue-900 font-bold flex justify-between items-center no-print">
-                        <span>${sec.category}</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                    </button>
-                    <div id="${secId}" class="accordion-content hidden p-4">
-                        <div class="overflow-x-auto">
-                            <table class="min-w-full text-sm">
-                                <thead class="bg-gray-50 border-b">
-                                    <tr>
-                                        <th class="px-2 py-3 w-1/2">Requerimiento</th>
-                                        <th class="px-2 py-3 text-center">Calificación</th>
-                                        <th class="px-2 py-3">Observaciones</th>
-                                    </tr>
-                                </thead>
-                                <tbody>`;
-                
+                html += `<div class="bg-white border rounded shadow-sm overflow-hidden">
+                    <div class="bg-gray-100 p-3 font-bold text-blue-900 border-b">${sec.category}</div>
+                    <div class="p-0 overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-gray-50 text-xs uppercase text-gray-500 border-b">
+                                <tr>
+                                    <th class="p-3 w-1/2">Requerimiento</th>
+                                    <th class="p-3 text-center">Pts</th>
+                                    <th class="p-3">Observaciones y Evidencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>`;
                 sec.items.forEach(item => {
-                    let scaleHtml = '<div class="flex gap-2 justify-center">';
-                    simplifiedScale.forEach(s => {
-                        scaleHtml += `
-                        <div class="color-radio">
-                            <input type="radio" id="q${qIdx}_${s.val}" name="q${qIdx}" value="${s.val}" required>
-                            <label for="q${qIdx}_${s.val}" style="color: ${s.color}; background-color: ${s.color}22; border: 2px solid ${s.color}" 
-                                   onclick="selectRadio(this, '${s.color}', 'q${qIdx}')">
-                                ${s.val}
-                            </label>
+                    let radios = `<div class="flex gap-1 justify-center">`;
+                    scale.forEach(s => {
+                        radios += `<div class="color-radio">
+                            <input type="radio" id="q${count}_${s.val}" name="q${count}" value="${s.val}" required>
+                            <label for="q${count}_${s.val}" style="color: ${s.color}; border: 1px solid ${s.color}; background: ${s.color}15" onclick="sel(this, '${s.color}', 'q${count}')">${s.val}</label>
                         </div>`;
                     });
-                    scaleHtml += '</div>';
-
-                    html += `
-                    <tr class="border-b">
-                        <td class="px-2 py-4 font-medium">${qIdx}. ${item}</td>
-                        <td class="px-2 py-4">${scaleHtml}</td>
-                        <td class="px-2 py-2"><textarea name="obs${qIdx}" class="w-full border rounded p-1 text-xs" rows="2"></textarea></td>
+                    radios += `</div>`;
+                    
+                    html += `<tr class="border-b hover:bg-gray-50">
+                        <td class="p-3 align-top font-medium">${count}. ${item}</td>
+                        <td class="p-3 align-top">${radios}</td>
+                        <td class="p-3 align-top">
+                            <textarea class="w-full border rounded p-1 text-xs mb-1" placeholder="Observaciones..."></textarea>
+                            <div class="flex items-center gap-2">
+                                <label class="bg-blue-50 text-blue-700 px-2 py-1 rounded text-[10px] font-bold cursor-pointer hover:bg-blue-100 border border-blue-200">
+                                    📷 FOTO EVIDENCIA
+                                    <input type="file" accept="image/*" capture="environment" class="hidden">
+                                </label>
+                            </div>
+                        </td>
                     </tr>`;
-                    qIdx++;
+                    count++;
                 });
-
-                html += `</tbody></table></div></div></div>`;
+                html += `</tbody></table></div></div>`;
             });
-            totalQuestions = qIdx - 1;
+            totalQ = count - 1;
             container.innerHTML = html;
         }
 
-        function selectRadio(labelEl, color, group) {
-            const labels = document.querySelectorAll(`input[name="${group}"] + label`);
-            labels.forEach(l => {
-                const origColor = l.style.borderColor;
-                l.style.backgroundColor = origColor + '22';
-                l.style.color = origColor;
+        function sel(el, c, g) {
+            document.querySelectorAll(`input[name="${g}"] + label`).forEach(l => {
+                l.style.background = l.style.borderColor + '15';
+                l.style.color = l.style.borderColor;
             });
-            labelEl.style.backgroundColor = color;
-            labelEl.style.color = 'white';
+            el.style.background = c;
+            el.style.color = 'white';
         }
 
-        function toggleSection(id) {
-            document.getElementById(id).classList.toggle('hidden');
-        }
-
-        // --- FIRMA ---
+        // --- FIRMA Y RESULTADOS ---
         let canvas, ctx, isDrawing = false;
         function initSignaturePad() {
-            canvas = document.getElementById('signature-pad');
-            ctx = canvas.getContext('2d');
-            const events = [['mousedown', start], ['mouseup', end], ['mousemove', move], ['touchstart', start], ['touchend', end], ['touchmove', move]];
-            events.forEach(e => canvas.addEventListener(e[0], e[1], {passive: false}));
+            canvas = document.getElementById('signature-pad'); ctx = canvas.getContext('2d');
+            const ev = [['mousedown', start], ['mousemove', move], ['mouseup', end], ['touchstart', start], ['touchmove', move], ['touchend', end]];
+            ev.forEach(e => canvas.addEventListener(e[0], e[1], {passive: false}));
         }
-        function getPos(e) {
-            const r = canvas.getBoundingClientRect();
-            const c = e.touches ? e.touches[0] : e;
-            return { x: c.clientX - r.left, y: c.clientY - r.top };
-        }
-        function start(e) { if(e.type === 'touchstart') e.preventDefault(); isDrawing = true; draw(e); }
+        function getP(e) { const r = canvas.getBoundingClientRect(); const c = e.touches ? e.touches[0] : e; return {x: c.clientX - r.left, y: c.clientY - r.top}; }
+        function start(e) { if(e.type==='touchstart') e.preventDefault(); isDrawing = true; move(e); }
+        function move(e) { if(!isDrawing) return; if(e.type==='touchmove') e.preventDefault(); const p = getP(e); ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
         function end() { isDrawing = false; ctx.beginPath(); }
-        function move(e) { if(!isDrawing) return; if(e.type === 'touchmove') e.preventDefault(); const p = getPos(e); ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
         function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-        // --- RESULTADOS ---
-        function calculateResults(e) {
+        document.getElementById('inspectionForm').onsubmit = (e) => {
             e.preventDefault();
-            let score = 0, answered = 0;
-            for(let i=1; i<=totalQuestions; i++) {
-                const val = document.querySelector(`input[name="q${i}"]:checked`);
-                if(val) { score += parseInt(val.value); answered++; }
+            let pts = 0;
+            for(let i=1; i<=totalQ; i++) {
+                const checked = document.querySelector(`input[name="q${i}"]:checked`);
+                if(!checked) return alert("Faltan preguntas por responder.");
+                pts += parseInt(checked.value);
             }
-            if(answered < totalQuestions) return alert("Complete todos los puntos.");
-            
-            const pct = (score / (totalQuestions * 10)) * 100;
-            displayResults(score, totalQuestions * 10, pct.toFixed(1));
-        }
-
-        function displayResults(pts, max, pct) {
-            const sec = document.getElementById('resultsSection');
+            const pct = (pts / (totalQ * 10)) * 100;
+            const res = document.getElementById('resultsSection');
             const circ = document.getElementById('scoreCircle');
-            sec.classList.remove('hidden');
-            document.getElementById('scorePercentage').textContent = pct + '%';
-            document.getElementById('scorePoints').textContent = `${pts} / ${max} Pts`;
-            
-            circ.className = "w-40 h-40 rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg border-4 border-white ";
             const lvl = document.getElementById('scoreLevel');
-            const desc = document.getElementById('scoreDescription');
+            res.classList.remove('hidden');
+            document.getElementById('scorePercentage').textContent = pct.toFixed(1) + '%';
+            
+            circ.className = "w-32 h-32 rounded-full flex flex-col items-center justify-center text-white font-bold ";
+            if(pct <= 65) { circ.classList.add('bg-red-500'); lvl.textContent = "INACEPTABLE"; }
+            else if(pct < 90) { circ.classList.add('bg-orange-500'); lvl.textContent = "REGULAR"; }
+            else { circ.classList.add('bg-green-600'); lvl.textContent = "ACEPTABLE"; }
+            res.scrollIntoView({behavior:'smooth'});
+        };
 
-            if(pct < 70) {
-                circ.classList.add('bg-red-500');
-                lvl.textContent = "INACEPTABLE";
-                desc.textContent = "Intervención inmediata requerida. Riesgos críticos detectados.";
-            } else if(pct < 90) {
-                circ.classList.add('bg-orange-500');
-                lvl.textContent = "REGULAR";
-                desc.textContent = "Se cumplen medidas básicas, pero requiere mejoras para alcanzar el estándar óptimo.";
-            } else {
-                circ.classList.add('bg-green-500');
-                lvl.textContent = "ACEPTABLE";
-                desc.textContent = "Nivel de cumplimiento satisfactorio. Mantener la mejora continua.";
-            }
-            sec.scrollIntoView({behavior: 'smooth'});
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderQuestions();
-            document.getElementById('inspectionForm').addEventListener('submit', calculateResults);
-        });
+        render();
     </script>
 </body>
 </html>
