@@ -23,7 +23,7 @@
         }
         #signature-pad { border: 2px dashed #cbd5e1; border-radius: 8px; cursor: crosshair; touch-action: none; }
         #successModal {
-            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8);
+            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
             z-index: 100; align-items: center; justify-content: center; padding: 20px;
         }
     </style>
@@ -35,27 +35,34 @@
             <h2 class="text-2xl font-bold text-blue-800 mb-6 uppercase">Acceso a SO Soluciones</h2>
             <input type="text" id="username" placeholder="Usuario" class="mb-4 w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-blue-500">
             <input type="password" id="password" placeholder="Contraseña" class="mb-6 w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded">Ingresar</button>
+            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition-colors">Ingresar</button>
         </div>
     </div>
 
     <div id="successModal">
-        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-8 text-center">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-8 text-center animate-in fade-in zoom-in duration-300">
             <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
             </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">¡Formulario Enviado!</h2>
-            <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
-                <p class="text-xs text-gray-400 font-bold uppercase tracking-widest">Puntuación de Inspección</p>
-                <div id="modalScore" class="text-4xl font-black text-blue-700 my-1">0%</div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-1">¡Inspección Finalizada!</h2>
+            <p class="text-gray-500 text-sm mb-6">El formulario se ha enviado correctamente.</p>
+            
+            <div class="bg-gray-50 rounded-lg p-5 mb-6 border border-gray-200">
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Resultado del Cumplimiento</p>
+                <div id="modalScore" class="text-5xl font-black text-blue-800 mb-2">0%</div>
                 <div id="modalStatus" class="inline-block px-4 py-1 rounded-full text-xs font-bold uppercase"></div>
             </div>
-            <p class="text-sm text-gray-500 italic mb-6">"Estos datos estarán siendo analizados por un ingeniero para aportar sus recomendaciones."</p>
+
+            <p class="text-sm text-gray-500 italic mb-8 px-4 leading-relaxed">
+                "Estos datos estarán siendo analizados por un ingeniero para aportar sus recomendaciones técnicas a la brevedad."
+            </p>
+
             <div class="space-y-3">
-                <a href="https://wa.me/50688068906?text=Hola,%20tengo%20una%20consulta%20sobre%20el%20formulario%20de%20inspección" target="_blank" class="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition-transform hover:scale-105">
-                    Consultas vía WhatsApp
+                <a href="https://wa.me/50688068906?text=Hola,%20tengo%20una%20consulta%20referente%20al%20formulario%20de%20inspección" target="_blank" class="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow-md transition-transform hover:scale-[1.02]">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                    Escribir a WhatsApp
                 </a>
-                <button onclick="location.reload()" class="w-full text-gray-400 text-sm hover:underline py-2">Nueva Inspección</button>
+                <button onclick="location.reload()" class="w-full text-gray-400 text-xs hover:underline uppercase tracking-widest font-bold py-2">Cerrar y Nueva Inspección</button>
             </div>
         </div>
     </div>
@@ -71,29 +78,36 @@
                 <section class="mb-8 print-border grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2 border-b pb-2"><h3 class="font-bold text-blue-800 uppercase">Datos Generales</h3></div>
                     <div class="flex flex-col">
-                        <label class="text-[10px] font-bold text-gray-400 ml-1 uppercase">Fecha de Inspección</label>
+                        <label class="text-[10px] font-bold text-gray-400 ml-1 uppercase">Fecha (Calendario)</label>
                         <input type="date" id="inputFecha" class="border p-2 rounded outline-none focus:ring-2 focus:ring-blue-200" required>
                     </div>
                     <div class="flex flex-col">
                         <label class="text-[10px] font-bold text-gray-400 ml-1 uppercase">Bodega / Localización</label>
-                        <input type="text" id="inputBodega" placeholder="Nombre de Bodega" class="border p-2 rounded" required>
+                        <input type="text" id="inputBodega" placeholder="Nombre de la Bodega" class="border p-2 rounded" required>
                     </div>
                     <input type="text" id="inputBodeguero" placeholder="Nombre del Bodeguero" class="border p-2 rounded" required>
                     <input type="text" id="inputRegente" placeholder="Encargado o Regente" class="border p-2 rounded" required>
-                    <input type="text" id="inputInspector" placeholder="Inspector SO" class="border p-2 rounded md:col-span-2" required>
+                    <input type="text" id="inputInspector" placeholder="Realizado por (Inspector)" class="border p-2 rounded md:col-span-2" required>
                 </section>
+
+                <div class="bg-blue-50 p-5 rounded-lg mb-8 border border-blue-200 text-[11px] text-blue-900 leading-relaxed shadow-sm">
+                    <h4 class="font-black mb-3 uppercase border-b border-blue-200 pb-1 text-xs">1. GENERALES (Contexto Normativo)</h4>
+                    <p class="mb-2 italic">• Corresponde al Ministerio de Salud velar porque los establecimientos donde se expendan agroquímicos reúnan condiciones de seguridad para disminuir riesgos a la salud y al ambiente.</p>
+                    <p class="mb-2">• Los plaguicidas son sustancias altamente tóxicas e inflamables; su manejo inadecuado causa daños graves.</p>
+                    <p>• <b>Instrucciones:</b> Evalúe cada punto con 10 (Aceptable), 5 (Mejora) o 0 (Inaceptable).</p>
+                </div>
 
                 <div id="questionsContainer" class="space-y-6"></div>
 
-                <section class="mt-8 pt-6 border-t-2 print-border text-center">
-                    <h3 class="font-semibold text-blue-800 mb-4 uppercase text-sm tracking-widest">Firma del Inspector</h3>
-                    <canvas id="signature-pad" width="400" height="180" class="bg-gray-50 mx-auto w-full max-w-md"></canvas>
-                    <button type="button" onclick="clearSignature()" class="mt-2 text-red-600 text-xs no-print">Limpiar Trazo</button>
+                <section class="mt-10 pt-8 border-t-2 print-border text-center">
+                    <h3 class="font-bold text-blue-800 mb-4 uppercase text-sm tracking-widest">Firma del Inspector</h3>
+                    <canvas id="signature-pad" width="400" height="180" class="bg-gray-50 mx-auto w-full max-w-md shadow-inner"></canvas>
+                    <button type="button" onclick="clearSignature()" class="mt-3 text-red-600 text-xs font-bold no-print uppercase tracking-tighter">Limpiar Trazo</button>
                 </section>
 
-                <div class="mt-8 flex justify-end gap-4 no-print border-t pt-6">
-                    <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-2 px-6 rounded hover:bg-gray-600 transition-colors">PDF / Imprimir</button>
-                    <button type="submit" id="submitBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-10 rounded shadow-lg transition-all">CALCULAR EVALUACIÓN</button>
+                <div class="mt-10 flex justify-end gap-4 no-print border-t pt-8">
+                    <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-all uppercase text-xs">PDF / Imprimir</button>
+                    <button type="submit" id="submitBtn" class="bg-blue-700 hover:bg-blue-800 text-white font-black py-3 px-12 rounded-lg shadow-xl transition-all uppercase text-sm tracking-widest">Calcular Evaluación</button>
                 </div>
             </form>
         </div>
@@ -110,95 +124,96 @@
             }
         }
 
+        // --- LOS 75 ÍTEMS COMPLETOS DEL EXCEL ---
         const dataConfig = [
             { category: "2. UBICACIÓN", items: [
                 {n:1, t:"Distancia mínima de 3 metros del límite de propiedad y de la vía pública."},
                 {n:2, t:"Distancia mínima de 3 metros de otras edificaciones (excepto afines)."},
-                {n:3, t:"Ubicados frente a vía pública o con camino de acceso no menor de 5 metros."},
-                {n:4, t:"Distancia mínima de 10 metros del limite de propiedad, vía pública u otras."},
-                {n:5, t:"Camino de acceso a vía pública de ancho no menor de 5 metros."},
-                {n:6, t:"Protección de fuentes de agua según distancias de la Ley Forestal."},
-                {n:7, t:"No ubicarse a menos de 50 metros de centros educativos, hospitales o clínicas."}
+                {n:3, t:"Ubicados frente a vía pública o con acceso no menor de 5 metros."},
+                {n:4, t:"Distancia mínima de 10 metros del limite de propiedad o vía pública."},
+                {n:5, t:"Acceso a vía pública de ancho no menor de 5 metros."},
+                {n:6, t:"Protección de fuentes de agua según Ley Forestal."},
+                {n:7, t:"No ubicarse a menos de 50 metros de centros educativos u hospitales."}
             ]},
             { category: "3. CONDICIONES FISICO SANITARIAS", items: [
-                {n:8, t:"Pisos, paredes y estructuras resistentes al fuego, lisos y no porosos."},
-                {n:9, t:"Recipiente vacío para derrames y dos sacos con materia absorbente rotulados."},
-                {n:10, t:"Residuos de derrames enterrados a +40cm de profundidad lejos de agua."},
-                {n:11, t:"Pisos con desnivel del 1% hacia el sistema de retención de derrames."},
-                {n:12, t:"Techos con altura mínima de 2.5 metros (piso a cercha)."},
-                {n:13, t:"Área de ventilación natural no inferior al 20% de la superficie del piso."},
-                {n:14, t:"Extintores ABC en buen estado, ubicados estratégicamente cada 125 m2."},
+                {n:8, t:"Materiales resistentes al fuego, lisos y no porosos."},
+                {n:9, t:"Recipiente vacío para derrames y materia absorbente rotulada."},
+                {n:10, t:"Residuos de derrames enterrados a +40cm lejos de agua."},
+                {n:11, t:"Pisos con desnivel del 1% hacia retención."},
+                {n:12, t:"Techos con altura mínima de 2.5 metros."},
+                {n:13, t:"Ventilación natural no inferior al 20% de la superficie."},
+                {n:14, t:"Extintores ABC cargados cada 125 m2."},
                 {n:15, t:"Instalaciones eléctricas entubadas."},
-                {n:16, t:"Separación de oficinas de zona de almacenaje (1.5m dist / 1.3m alto)."},
-                {n:17, t:"Servicios sanitarios y duchas para el personal en buen estado."},
-                {n:18, t:"Disponibilidad y uso de Equipo de Protección Personal (EPP) completo."},
-                {n:19, t:"Duchas de emergencia y lavaojos rotulados y accesibles."},
-                {n:20, t:"Separación de áreas de comedor y trabajo según normativa."}
+                {n:16, t:"Separación de oficinas de zona de almacenaje."},
+                {n:17, t:"Servicios sanitarios y duchas en buen estado."},
+                {n:18, t:"Disponibilidad y uso de EPP completo."},
+                {n:19, t:"Duchas de emergencia y lavaojos rotulados."},
+                {n:20, t:"Separación de áreas de comedor y trabajo."}
             ]},
             { category: "4. ALMACENAMIENTO", items: [
-                {n:21, t:"Estantes de material resistente al fuego e impermeable."},
-                {n:22, t:"Almacenamiento permite la circulación interna del aire."},
-                {n:23, t:"Altura de estiba no mayor a 3/4 partes de la altura total."},
-                {n:24, t:"Sin instalaciones descubiertas o luz artificial directa sobre estantes."},
-                {n:25, t:"Productos identificados y agrupados por afinidad físico-química."},
-                {n:26, t:"Productos inflamables separados por pared incombustible."},
-                {n:27, t:"Separación estantes-pared: 25cm (hasta 200m2) o 50cm (>200m2)."},
-                {n:28, t:"Pasillos entre estibas o estantes iguales o mayores a 80 cm."},
-                {n:29, t:"En zonas inundables, productos a altura 20% sobre nivel máximo."}
+                {n:21, t:"Estantes resistentes al fuego e impermeables."},
+                {n:22, t:"Almacenamiento permite circulación de aire."},
+                {n:23, t:"Altura de estiba no mayor a 3/4 partes del total."},
+                {n:24, t:"Sin luz artificial directa sobre estantes."},
+                {n:25, t:"Productos identificados y agrupados por afinidad."},
+                {n:26, t:"Inflamables separados por pared incombustible."},
+                {n:27, t:"Separación estantes-pared según metraje."},
+                {n:28, t:"Pasillos entre estibas iguales o mayores a 80 cm."},
+                {n:29, t:"Zonas inundables: productos a altura 20% sobre nivel máx."}
             ]},
             { category: "5. ORGANIZACIÓN DEL TRABAJO", items: [
-                {n:30, t:"Personal de carga usa overol o manga larga y delantal impermeable."},
-                {n:31, t:"Personal de ventas usa camisa de manga larga u overol."},
-                {n:32, t:"Personal sometido a examen médico pre-empleo y periódico."},
-                {n:33, t:"Análisis de colinesterasa refrendado por microbiología (Digitales)."},
-                {n:34, t:"Personal entrenado por Regente Agrónomo en manejo seguro."},
-                {n:35, t:"Rótulos claros sobre riesgos asociados a los agroquímicos."},
-                {n:36, t:"Hojas de Seguridad (MSDS) en español disponibles (QR)."},
-                {n:37, t:"Botiquín de emergencias completo y personal capacitado."},
-                {n:38, t:"Rótulo visible con números de Intoxicaciones, 911, Cruz Roja y Bomberos."},
-                {n:39, t:"Producto deteriorado o sin etiqueta aislado para devolución."},
-                {n:40, t:"Desechos y envases manejados según Plan de Manejo de la Empresa."},
-                {n:41, t:"Trabajadores NO llevan ropa de trabajo o EPP a su domicilio."},
-                {n:42, t:"Prohibición de comer, fumar o beber en áreas de trabajo."}
+                {n:30, t:"Personal de carga usa overol o manga larga."},
+                {n:31, t:"Personal de ventas usa vestimenta adecuada."},
+                {n:32, t:"Personal sometido a examen médico periódico."},
+                {n:33, t:"Análisis de colinesterasa refrendado."},
+                {n:34, t:"Personal entrenado por Regente Agrónomo."},
+                {n:35, t:"Rótulos claros sobre riesgos asociados."},
+                {n:36, t:"Hojas de Seguridad (MSDS) disponibles."},
+                {n:37, t:"Botiquín completo y personal capacitado."},
+                {n:38, t:"Rótulo visible con números de emergencia."},
+                {n:39, t:"Producto deteriorado aislado para devolución."},
+                {n:40, t:"Desechos manejados según Plan de Manejo."},
+                {n:41, t:"Trabajadores NO llevan EPP a su domicilio."},
+                {n:42, t:"Prohibición de comer, fumar o beber en áreas."}
             ]},
             { category: "6. ASPECTOS DE REGENCIA DE MAG", items: [
                 {n:43, t:"Permiso Sanitario de Funcionamiento vigente."},
                 {n:44, t:"Patentes municipales en lugar visible."},
-                {n:45, t:"Certificados del Colegio de Ingenieros Agrónomos visibles."},
-                {n:46, t:"Personal con curso MAG de Uso Seguro de Plaguicidas."},
-                {n:47, t:"Informes mensuales al Colegio Agrónomos al día."},
+                {n:45, t:"Certificados del Colegio de Agrónomos visibles."},
+                {n:46, t:"Personal con curso MAG Uso Seguro."},
+                {n:47, t:"Informes mensuales al día."},
                 {n:48, t:"Libro de productos restringidos actualizado."},
-                {n:49, t:"Archivados informes de visitas (MAG, Salud, Colegio)."},
-                {n:50, t:"Hojas de Seguridad (MSDS) de cada producto en archivo."},
-                {n:51, t:"Productos separados y almacenados por clase."},
+                {n:49, t:"Archivados informes de visitas externas."},
+                {n:50, t:"Hojas MSDS de cada producto en archivo."},
+                {n:51, t:"Productos separados por clase."},
                 {n:52, t:"Pasillos libres y demarcados."},
-                {n:53, t:"Bodega con rotulación de seguridad debida."},
-                {n:54, t:"Ausencia de productos en mal estado, derramados o rotos."},
+                {n:53, t:"Bodega con rotulación de seguridad."},
+                {n:54, t:"Ausencia de productos derramados o rotos."},
                 {n:55, t:"Ausencia de productos vencidos."},
-                {n:56, t:"Envases con triple lavado en bolsas plásticas seguras."},
-                {n:57, t:"Orden y Limpieza general aceptable."},
-                {n:58, t:"EPP en buenas condiciones de mantenimiento."},
+                {n:56, t:"Envases con triple lavado en bolsas seguras."},
+                {n:57, t:"Orden y Limpieza general."},
+                {n:58, t:"EPP en buenas condiciones."},
                 {n:59, t:"Equipo de recolección de derrames completo."},
-                {n:60, t:"Examen de colinesterasa del bodeguero cada 3 meses."}
+                {n:60, t:"Examen de colinesterasa cada 3 meses."}
             ]},
             { category: "7. TRANSPORTE DE AGROQUÍMICOS", items: [
                 {n:61, t:"No transporta químicos en cabina con pasajeros."},
-                {n:62, t:"No transporta químicos junto a ropa o alimentos."},
-                {n:63, t:"Verificación de envases (buen estado y cerrados) al cargar."},
-                {n:64, t:"No comer, fumar o beber durante carga/descarga."},
-                {n:65, t:"Carga bien asegurada en el vehículo."},
-                {n:66, t:"Estiba uniforme (polvos sobre líquidos, cajas sobre tambores)."},
-                {n:67, t:"Vehículo en buen estado físico y mecánico."},
-                {n:68, t:"No se deja el vehículo cargado sin vigilancia."},
-                {n:69, t:"Vehículo identificado con el nombre de la empresa."},
-                {n:70, t:"Equipo de protección básico presente en el vehículo."},
-                {n:71, t:"Kit anti derrame y extintor en el vehículo."},
-                {n:72, t:"Cuenta con la hojas MSDS del material que transporta (QR)."},
-                {n:73, t:"Cuenta con la licencia al día y la adecuada para el vehículo."},
-                {n:74, t:"Cuenta con RTV y Marchamo al día."}
+                {n:62, t:"No transporta junto a ropa o alimentos."},
+                {n:63, t:"Verificación de envases al cargar."},
+                {n:64, t:"No comer o fumar durante carga."},
+                {n:65, t:"Carga bien asegurada."},
+                {n:66, t:"Estiba uniforme de productos."},
+                {n:67, t:"Vehículo en buen estado físico/mecánico."},
+                {n:68, t:"Vehículo cargado con vigilancia."},
+                {n:69, t:"Vehículo identificado con nombre de empresa."},
+                {n:70, t:"EPP básico presente en vehículo."},
+                {n:71, t:"Kit antiderrames y extintor en vehículo."},
+                {n:72, t:"Hojas MSDS presentes (QR)."},
+                {n:73, t:"Licencia al día y adecuada."},
+                {n:74, t:"RTV y Marchamo al día."}
             ]},
             { category: "8. OBLIGACIONES", items: [
-                {n:75, t:"El representante legal y el regente cumplen las disposiciones del Reglamento."}
+                {n:75, t:"Representante y Regente cumplen las disposiciones del Reglamento."}
             ]}
         ];
 
@@ -208,12 +223,13 @@
         function render() {
             const container = document.getElementById('questionsContainer');
             let html = ''; let globalIdx = 1;
+            
             dataConfig.forEach((sec) => {
                 html += `<div class="bg-white border rounded shadow-md overflow-hidden">
-                    <div class="bg-gray-100 p-3 font-bold text-blue-900 border-b text-[11px] uppercase tracking-wider">${sec.category}</div>
+                    <div class="bg-gray-100 p-3 font-bold text-blue-900 border-b text-[11px] uppercase tracking-widest">${sec.category}</div>
                     <div class="overflow-x-auto"><table class="w-full text-[11px] text-left">
                         <thead class="bg-gray-50 text-gray-400 border-b">
-                            <tr><th class="p-3 w-[45%]">Requerimiento</th><th class="p-3 text-center">Pts</th><th class="p-3">Observaciones y Evidencia</th></tr>
+                            <tr><th class="p-3 w-[45%]">Requerimiento</th><th class="p-3 text-center">Puntos</th><th class="p-3">Observación / Foto</th></tr>
                         </thead><tbody>`;
                 sec.items.forEach(item => {
                     let radios = `<div class="flex gap-1 justify-center">`;
@@ -225,12 +241,12 @@
                     });
                     radios += `</div>`;
                     html += `<tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 align-top font-medium text-gray-600">${item.n}. ${item.t}</td>
+                        <td class="p-3 align-top font-medium text-gray-700">${item.n}. ${item.t}</td>
                         <td class="p-3 align-top">${radios}</td>
                         <td class="p-3 align-top">
                             <textarea class="w-full border rounded p-1 text-[10px] mb-1" rows="1" placeholder="Hallazgos..."></textarea>
                             <label class="block bg-gray-50 text-gray-500 text-[9px] font-bold p-1 rounded border border-dashed border-gray-300 text-center cursor-pointer hover:bg-blue-50 no-print">
-                                📷 ADJUNTAR FOTO
+                                📷 EVIDENCIA
                                 <input type="file" accept="image/*" capture="environment" class="hidden">
                             </label>
                         </td>
@@ -249,6 +265,7 @@
             el.style.background = c; el.style.color = 'white';
         }
 
+        // --- FIRMA ---
         let canvas, ctx, isDrawing = false;
         function initSignaturePad() {
             canvas = document.getElementById('signature-pad'); ctx = canvas.getContext('2d');
@@ -261,15 +278,16 @@
         function end() { isDrawing = false; ctx.beginPath(); }
         function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
+        // --- ENVIO Y CALCULO ---
         document.getElementById('inspectionForm').onsubmit = async (e) => {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.textContent = "Sincronizando...";
+            btn.disabled = true; btn.textContent = "PROCESANDO ENVÍO...";
 
             let score = 0; let respuestasEnvio = {};
             for(let i=1; i<=qCountTotal; i++) {
                 const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                if(!sel) { alert("Debe evaluar el punto " + i); btn.disabled = false; return; }
+                if(!sel) { alert("Falta evaluar el punto " + i); btn.disabled = false; return; }
                 const obs = document.querySelector(`input[name="q${i}"]`).closest('tr').querySelector('textarea').value;
                 score += parseInt(sel.value);
                 respuestasEnvio["q" + i] = { pts: parseInt(sel.value), obs: obs };
@@ -292,13 +310,16 @@
 
             try {
                 await fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                
+                // Mostrar Modal de Éxito
                 document.getElementById('modalScore').textContent = pct.toFixed(1) + "%";
-                const b = document.getElementById('modalStatus');
-                b.textContent = nivel;
-                b.className = `inline-block px-4 py-1 rounded-full text-[10px] font-bold uppercase ${colorM}`;
+                const badge = document.getElementById('modalStatus');
+                badge.textContent = nivel;
+                badge.className = `inline-block px-5 py-1.5 rounded-full text-xs font-bold uppercase shadow-sm ${colorM}`;
                 document.getElementById('successModal').style.display = 'flex';
+                
             } catch (err) {
-                alert("Error de conexión con la base de datos.");
+                alert("Error crítico de conexión.");
             } finally {
                 btn.disabled = false; btn.textContent = "CALCULAR EVALUACIÓN";
             }
