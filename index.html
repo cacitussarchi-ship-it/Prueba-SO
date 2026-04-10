@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inspección de Bodegas - Salud Ocupacional</title>
+    <title>Inspección de Bodegas Completa - Salud Ocupacional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -15,36 +15,21 @@
         }
         .color-radio input[type="radio"] { display: none; }
         .color-radio label {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 35px;
-            height: 35px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            border: 2px solid transparent;
-            transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 34px; height: 34px; border-radius: 6px; cursor: pointer;
+            font-weight: bold; font-size: 13px; border: 2px solid transparent; transition: all 0.2s;
         }
         .color-radio input[type="radio"]:checked + label {
-            transform: scale(1.1);
-            border-color: #000;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transform: scale(1.1); border-color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        #signature-pad {
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            cursor: crosshair;
-            touch-action: none;
-        }
+        #signature-pad { border: 2px dashed #cbd5e1; border-radius: 8px; cursor: crosshair; touch-action: none; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
 
     <div id="loginScreen" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-50">
         <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
-            <h2 class="text-2xl font-bold text-blue-800 mb-6">Acceso a Inspección</h2>
+            <h2 class="text-2xl font-bold text-blue-800 mb-6 uppercase">Acceso SO</h2>
             <input type="text" id="username" placeholder="Usuario" class="mb-4 w-full border border-gray-300 rounded-md p-2">
             <input type="password" id="password" placeholder="Contraseña" class="mb-6 w-full border border-gray-300 rounded-md p-2">
             <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded">Ingresar</button>
@@ -55,20 +40,27 @@
         <div class="bg-white shadow-xl rounded-lg overflow-hidden">
             <div class="bg-blue-800 text-white p-6 text-center">
                 <h1 class="text-3xl font-bold uppercase">Inspección de Bodegas</h1>
-                <p class="mt-1">Salud Ocupacional - Formulario de Cumplimiento</p>
+                <p class="text-sm opacity-90">Cumplimiento Normativo - Salud Ocupacional</p>
             </div>
 
             <form id="inspectionForm" class="p-6">
                 <section class="mb-8 print-border grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2 border-b pb-2 mb-2"><h3 class="font-bold text-blue-800">DATOS GENERALES</h3></div>
-                    <input type="text" placeholder="Fecha de Inspección" class="border p-2 rounded" required>
-                    <input type="text" placeholder="Bodega / Ubicación" class="border p-2 rounded" required>
+                    <div class="md:col-span-2 border-b pb-2"><h3 class="font-bold text-blue-800">DATOS GENERALES</h3></div>
+                    <input type="text" placeholder="Fecha de Inspección (Ej: AGOSTO 2025)" class="border p-2 rounded" required>
+                    <input type="text" placeholder="Bodega (Ej: CEDI CENTRAL ALAJUELA)" class="border p-2 rounded" required>
                     <input type="text" placeholder="Nombre del Bodeguero" class="border p-2 rounded" required>
                     <input type="text" placeholder="Encargado o Regente" class="border p-2 rounded" required>
-                    <input type="text" placeholder="Inspector que realiza" class="border p-2 rounded md:col-span-2" required>
+                    <input type="text" placeholder="Realizó (Inspector)" class="border p-2 rounded md:col-span-2" required>
                 </section>
 
-                <div id="questionsContainer" class="space-y-6"></div>
+                <div class="bg-blue-50 p-4 rounded-md mb-6 border border-blue-200 text-xs text-blue-900 leading-relaxed">
+                    <h4 class="font-bold mb-2">1. GENERALES</h4>
+                    <p>• Corresponde al Ministerio de Salud velar porque los establecimientos donde se expendan agroquímicos reúnan condiciones de seguridad.</p>
+                    <p>• Los plaguicidas son sustancias altamente tóxicas, inflamables y corrosivas.</p>
+                    <p>• Es necesario emitir normas que regulen expendios y bodegas.</p>
+                </div>
+
+                <div id="questionsContainer" class="space-y-4"></div>
 
                 <section class="mt-8 pt-6 border-t-2 print-border text-center">
                     <h3 class="font-semibold text-blue-800 mb-4">Firma del Inspector</h3>
@@ -77,8 +69,8 @@
                 </section>
 
                 <div class="mt-8 flex justify-end gap-4 no-print border-t pt-6">
-                    <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-2 px-6 rounded">Imprimir/PDF</button>
-                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded">Calcular Resultados</button>
+                    <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-2 px-6 rounded">Imprimir / PDF</button>
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded">Calcular Evaluación</button>
                 </div>
             </form>
 
@@ -88,7 +80,7 @@
                         <span id="scorePercentage" class="text-3xl">0%</span>
                     </div>
                     <h3 id="scoreLevel" class="text-2xl font-bold mt-4 uppercase"></h3>
-                    <p id="scoreDescription" class="text-gray-600 text-center mt-2 max-w-2xl"></p>
+                    <p id="scoreDescription" class="text-gray-600 text-center mt-2 max-w-2xl text-sm"></p>
                 </div>
             </div>
         </div>
@@ -105,170 +97,164 @@
 
         const dataConfig = [
             { category: "2. UBICACIÓN", items: [
-                "Distancia mínima de 3 metros del límite de propiedad y de la vía pública.",
-                "Distancia mínima de 3 metros de otras edificaciones (excepto afines).",
-                "Ubicados frente a vía pública o con acceso no menor de 5 metros.",
-                "Distancia mínima de 10 metros del límite de propiedad o vía pública.",
-                "Distancia de acceso a vía pública de ancho no menor a 5 metros.",
-                "Protección de fuentes de agua según Ley Forestal.",
-                "No ubicarse a menos de 50 metros de centros educativos u hospitales."
+                {n:1, t:"Distancia mínima de 3 metros del límite de propiedad y de la vía pública."},
+                {n:2, t:"Distancia mínima de 3 metros de otras edificaciones (excepto afines o compatibles)."},
+                {n:3, t:"Ubicados frente a vía pública o con camino de acceso no menor de 5 metros."},
+                {n:4, t:"Distancia mínima de 10 metros del limite de propiedad, vía pública u otras edificaciones."},
+                {n:5, t:"Camino de acceso a vía pública de ancho no menor de 5 metros."},
+                {n:6, t:"Protección de fuentes de agua según distancias de la Ley Forestal."},
+                {n:7, t:"No ubicarse a menos de 50 metros de centros educativos, hospitales o clínicas."}
             ]},
             { category: "3. CONDICIONES FISICO SANITARIAS", items: [
-                "Materiales resistentes al fuego, lisos y no porosos.",
-                "Recipiente vacío para derrames y dos sacos con materia absorbente.",
-                "Residuos de derrames enterrados a 40cm lejos de fuentes de agua.",
-                "Pisos con desnivel del 1% hacia sistema de retención.",
-                "Techos con altura mínima de 2.5 metros.",
-                "Ventilación natural no inferior al 20% de la superficie.",
-                "Extintores tipo ABC cargados y ubicados cada 125 m2.",
-                "Instalaciones eléctricas entubadas.",
-                "Separación de oficinas de zona de almacenaje (1.5m dist / 1.3m alto).",
-                "Servicios sanitarios y duchas en buen estado.",
-                "Disponibilidad y uso de Equipo de Protección Personal (EPP).",
-                "Duchas de emergencia y lavaojos rotulados.",
-                "Separación de áreas de comedor y trabajo."
+                {n:8, t:"Pisos, paredes y estructuras resistentes al fuego, lisos y no porosos. Ventilación autorizada."},
+                {n:9, t:"Recipiente vacío para derrames y dos sacos con materia absorbente (arena/pómez) rotulados."},
+                {n:10, t:"Residuos de derrames enterrados a +40cm de profundidad lejos de fuentes de agua."},
+                {n:11, t:"Pisos con desnivel del 1% hacia el sistema de retención de derrames."},
+                {n:12, t:"Techos con altura mínima de 2.5 metros (piso a cercha)."},
+                {n:13, t:"Área de ventilación natural no inferior al 20% de la superficie del piso."},
+                {n:14, t:"Extintores ABC en buen estado, ubicados estratégicamente cada 125 m2."},
+                {n:15, t:"Instalaciones eléctricas entubadas."},
+                {n:16, t:"Separación de oficinas de zona de almacenaje (1.5m distancia / 1.3m alto)."},
+                {n:17, t:"Servicios sanitarios y duchas para el personal en buen estado."},
+                {n:18, t:"Disponibilidad y uso de Equipo de Protección Personal (EPP) completo."},
+                {n:19, t:"Duchas de emergencia y lavaojos rotulados y accesibles."},
+                {n:20, t:"Separación de áreas de comedor y trabajo según normativa."}
             ]},
             { category: "4. ALMACENAMIENTO", items: [
-                "Estantes de material resistente al fuego e impermeable.",
-                "Almacenamiento permite la circulación interna del aire.",
-                "Altura de productos no mayor a 3/4 partes de la altura total.",
-                "Sin instalaciones descubiertas o luz directa sobre estantes.",
-                "Productos identificados con etiquetas y agrupados por afinidad.",
-                "Productos inflamables en zona separada por pared incombustible.",
-                "Separación de estantes y pared (25cm o 50cm según área).",
-                "Pasillos entre estibas iguales o mayores a 80 cm.",
-                "En zonas inundables, productos a altura 20% sobre nivel máx."
+                {n:20, t:"Estantes de material resistente al fuego e impermeable."},
+                {n:21, t:"Almacenamiento permite la circulación interna del aire."},
+                {n:22, t:"Altura de estiba no mayor a 3/4 partes de la altura total."},
+                {n:23, t:"Sin instalaciones descubiertas o luz artificial directa sobre estantes."},
+                {n:24, t:"Productos identificados y agrupados por afinidad físico-química."},
+                {n:25, t:"Productos inflamables separados por pared incombustible (1 hora resistencia)."},
+                {n:26, t:"Separación estantes-pared: 25cm (hasta 200m2) o 50cm (>200m2)."},
+                {n:27, t:"Pasillos entre estibas o estantes iguales o mayores a 80 cm."},
+                {n:28, t:"En zonas inundables, productos a altura 20% sobre nivel máximo."}
             ]},
             { category: "5. ORGANIZACIÓN DEL TRABAJO", items: [
-                "Personal de carga utiliza ropa adecuada (overol/manga larga).",
-                "Personal de ventas utiliza vestimenta adecuada.",
-                "Personal sometido a examen médico periódico.",
-                "Análisis de colinesterasa refrendado por microbiología.",
-                "Entrenamiento del personal por regente agrónomo.",
-                "Rótulos claros sobre riesgos asociados.",
-                "Hojas de Seguridad (MSDS) en español disponibles.",
-                "Botiquín de emergencias y personal capacitado.",
-                "Rótulo visible con teléfonos de emergencia (911/Intoxicaciones).",
-                "Producto deteriorado o sin etiqueta retirado y aislado.",
-                "Desechos manejados según Plan de Manejo de la Empresa.",
-                "Personal no lleva EPP a su domicilio.",
-                "Prohibición de comer, fumar o beber en áreas de trabajo."
+                {n:29, t:"Personal de carga usa overol o manga larga y delantal impermeable."},
+                {n:30, t:"Personal de ventas usa camisa de manga larga u overol."},
+                {n:31, t:"Personal sometido a examen médico pre-empleo y periódico."},
+                {n:32, t:"Análisis de colinesterasa refrendado por microbiología (Digitales)."},
+                {n:33, t:"Personal entrenado por Regente Agrónomo en manejo seguro."},
+                {n:34, t:"Rótulos claros sobre riesgos asociados a los agroquímicos."},
+                {n:35, t:"Hojas de Seguridad (MSDS) en español disponibles (QR)."},
+                {n:36, t:"Botiquín de emergencias completo y personal capacitado."},
+                {n:37, t:"Rótulo visible con números de Intoxicaciones, 911, Cruz Roja y Bomberos."},
+                {n:38, t:"Producto deteriorado o sin etiqueta aislado para devolución."},
+                {n:39, t:"Desechos y envases manejados según Plan de Manejo de la Empresa."},
+                {n:40, t:"Trabajadores NO llevan ropa de trabajo o EPP a su domicilio."},
+                {n:41, t:"Prohibición de comer, fumar o beber en áreas de trabajo."}
             ]},
             { category: "6. ASPECTOS DE REGENCIA DE MAG", items: [
-                "Permiso de funcionamiento del Ministerio de Salud vigente.",
-                "Patentes municipales en lugar visible.",
-                "Certificados del Colegio de Ing. Agrónomos visibles.",
-                "Curso de Uso Seguro de Plaguicidas (MAG) al día.",
-                "Informes mensuales del Colegio de Agrónomos al día.",
-                "Libro de productos restringidos actualizado.",
-                "Archivos de visitas (MAG, Salud, Colegio) al día.",
-                "Archivo de hojas de seguridad MSDS completo.",
-                "Productos separados y almacenados por clase.",
-                "Pasillos libres y demarcados.",
-                "Bodega con rotulación de seguridad debida.",
-                "Ausencia de productos en mal estado o derramados.",
-                "Ausencia de productos vencidos.",
-                "Recepción de envases con triple lavado en bolsas seguras.",
-                "Orden y limpieza general.",
-                "EPP en buenas condiciones de mantenimiento.",
-                "Equipo de recolección de derrames completo.",
-                "Examen de colinesterasa del bodeguero cada 3 meses."
+                {n:41, t:"Permiso Sanitario de Funcionamiento vigente."},
+                {n:42, t:"Patentes municipales en lugar visible."},
+                {n:43, t:"Certificados del Colegio de Ingenieros Agrónomos visibles."},
+                {n:44, t:"Personal con curso MAG de Uso Seguro de Plaguicidas."},
+                {n:45, t:"Informes mensuales al Colegio Agrónomos al día."},
+                {n:46, t:"Libro de productos restringidos actualizado."},
+                {n:47, t:"Archivados informes de visitas (MAG, Salud, Colegio)."},
+                {n:48, t:"Hojas de Seguridad (MSDS) de cada producto en archivo."},
+                {n:49, t:"Productos separados y almacenados por clase."},
+                {n:50, t:"Pasillos libres y demarcados."},
+                {n:51, t:"Bodega con rotulación de seguridad debida."},
+                {n:52, t:"Ausencia de productos en mal estado, derramados o rotos."},
+                {n:53, t:"Ausencia de productos vencidos."},
+                {n:54, t:"Envases con triple lavado en bolsas plásticas seguras."},
+                {n:55, t:"Orden y Limpieza general aceptable."},
+                {n:56, t:"EPP en buenas condiciones de mantenimiento."},
+                {n:57, t:"Equipo de recolección de derrames completo."},
+                {n:58, t:"Examen de colinesterasa del bodeguero cada 3 meses."}
             ]},
             { category: "7. TRANSPORTE DE AGROQUÍMICOS", items: [
-                "No se transportan químicos en cabina con pasajeros.",
-                "No se transportan junto a ropa o alimentos.",
-                "Verificación de envases en buen estado al cargar/descargar.",
-                "Prohibido comer o fumar durante la carga/descarga.",
-                "Carga bien asegurada.",
-                "Estiba uniforme de productos.",
-                "Vehículo en buen estado físico y mecánico.",
-                "Vehículo cargado no se deja sin vigilancia.",
-                "Vehículo identificado con nombre de empresa.",
-                "Equipo de protección básico en el vehículo.",
-                "Kit antiderrames y extintor en el vehículo.",
-                "Hojas MSDS presentes en el transporte.",
-                "Licencia de conducir al día y adecuada.",
-                "RTV y Marchamo al día."
+                {n:59, t:"No transporta químicos en cabina con pasajeros."},
+                {n:60, t:"No transporta químicos junto a ropa o alimentos."},
+                {n:61, t:"Verificación de envases (buen estado y cerrados) al cargar."},
+                {n:62, t:"No comer, fumar o beber durante carga/descarga."},
+                {n:63, t:"Carga bien asegurada en el vehículo."},
+                {n:64, t:"Estiba uniforme (polvos sobre líquidos, cajas sobre tambores)."},
+                {n:65, t:"Vehículo en buen estado físico y mecánico."},
+                {n:66, t:"Vehículo cargado nunca se deja sin vigilancia."},
+                {n:67, t:"Vehículo identificado con el nombre de la empresa."},
+                {n:68, t:"Equipo de protección básico presente en el vehículo."},
+                {n:69, t:"Kit anti derrame y extintor en el vehículo."},
+                {n:70, t:"Hojas MSDS presentes en el transporte (QR)."},
+                {n:71, t:"Licencia al día y adecuada para el vehículo."},
+                {n:72, t:"RTV y Marchamo al día."}
             ]},
             { category: "8. OBLIGACIONES", items: [
-                "Cumplimiento de disposiciones por parte de representante y regente."
+                {n:"OBLIG.", t:"Representante y Regente cumplen las disposiciones del Reglamento."}
             ]}
         ];
 
         const scale = [
-            { v: 0, c: "#ef4444", t: "0" },
-            { v: 5, c: "#f97316", t: "5" },
-            { v: 10, c: "#16a34a", t: "10" }
+            { v: 0, c: "#ef4444", l: "0" },
+            { v: 5, c: "#f97316", l: "5" },
+            { v: 10, c: "#16a34a", l: "10" }
         ];
 
-        let totalQuestions = 0;
+        let qCountTotal = 0;
 
         function render() {
             const container = document.getElementById('questionsContainer');
             let html = '';
-            let qIdx = 1;
+            let globalIdx = 1;
 
             dataConfig.forEach((sec, sIdx) => {
                 html += `<div class="bg-white border rounded shadow-sm overflow-hidden">
-                    <div class="bg-blue-50 p-4 font-bold text-blue-900 border-b flex justify-between">
-                        <span>${sec.category}</span>
-                    </div>
+                    <div class="bg-gray-100 p-3 font-bold text-blue-900 border-b uppercase">${sec.category}</div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left">
+                        <table class="w-full text-xs text-left">
                             <thead class="bg-gray-50 text-gray-500 border-b">
                                 <tr>
                                     <th class="p-3 w-1/2">Requerimiento</th>
-                                    <th class="p-3 text-center">Pts (0/5/10)</th>
-                                    <th class="p-3">Observaciones y Evidencia</th>
+                                    <th class="p-3 text-center">Puntos (0/5/10)</th>
+                                    <th class="p-3">Observaciones y Foto</th>
                                 </tr>
                             </thead>
                             <tbody>`;
-                
                 sec.items.forEach(item => {
-                    let radios = `<div class="flex gap-2 justify-center">`;
+                    let radios = `<div class="flex gap-1 justify-center">`;
                     scale.forEach(s => {
                         radios += `<div class="color-radio">
-                            <input type="radio" id="q${qIdx}_${s.v}" name="q${qIdx}" value="${s.v}" required>
-                            <label for="q${qIdx}_${s.v}" style="color: ${s.c}; border: 1px solid ${s.c}; background: ${s.c}15" onclick="selLabel(this, '${s.c}', 'q${qIdx}')">${s.t}</label>
+                            <input type="radio" id="g${globalIdx}_${s.v}" name="q${globalIdx}" value="${s.v}" required>
+                            <label for="g${globalIdx}_${s.v}" style="color: ${s.c}; border: 1px solid ${s.c}; background: ${s.c}15" onclick="selLabel(this, '${s.c}', 'q${globalIdx}')">${s.l}</label>
                         </div>`;
                     });
                     radios += `</div>`;
 
                     html += `<tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 align-top font-medium">${qIdx}. ${item}</td>
+                        <td class="p-3 align-top font-medium text-gray-700">${item.n}. ${item.t}</td>
                         <td class="p-3 align-top">${radios}</td>
                         <td class="p-3 align-top">
-                            <textarea class="w-full border rounded p-1 text-xs mb-2" rows="2" placeholder="Describa hallazgos..."></textarea>
-                            <div class="flex items-center">
-                                <label class="flex items-center gap-2 bg-blue-100 text-blue-800 px-3 py-1 rounded text-xs font-bold cursor-pointer hover:bg-blue-200 border border-blue-300">
-                                    📷 SUBIR EVIDENCIA
-                                    <input type="file" accept="image/*" capture="environment" class="hidden">
-                                </label>
-                            </div>
+                            <textarea class="w-full border rounded p-1 text-[10px] mb-1" placeholder="Hallazgos..."></textarea>
+                            <label class="block bg-blue-50 text-blue-800 text-[9px] font-bold p-1 rounded border border-blue-200 text-center cursor-pointer hover:bg-blue-100">
+                                📷 SUBIR FOTO
+                                <input type="file" accept="image/*" capture="environment" class="hidden">
+                            </label>
                         </td>
                     </tr>`;
-                    qIdx++;
+                    globalIdx++;
                 });
                 html += `</tbody></table></div></div>`;
             });
-            totalQuestions = qIdx - 1;
+            qCountTotal = globalIdx - 1;
             container.innerHTML = html;
         }
 
-        function selLabel(el, color, group) {
-            document.querySelectorAll(`input[name="${group}"] + label`).forEach(l => {
+        function selLabel(el, c, g) {
+            document.querySelectorAll(`input[name="${g}"] + label`).forEach(l => {
                 l.style.background = l.style.borderColor + '15';
                 l.style.color = l.style.borderColor;
             });
-            el.style.background = color;
-            el.style.color = 'white';
+            el.style.background = c; el.style.color = 'white';
         }
 
         let canvas, ctx, isDrawing = false;
         function initSignaturePad() {
             canvas = document.getElementById('signature-pad'); ctx = canvas.getContext('2d');
-            const events = [['mousedown', start], ['mousemove', move], ['mouseup', end], ['touchstart', start], ['touchmove', move], ['touchend', end]];
-            events.forEach(e => canvas.addEventListener(e[0], e[1], {passive: false}));
+            const evs = [['mousedown', start], ['mousemove', move], ['mouseup', end], ['touchstart', start], ['touchmove', move], ['touchend', end]];
+            evs.forEach(e => canvas.addEventListener(e[0], e[1], {passive: false}));
         }
         function getPos(e) { const r = canvas.getBoundingClientRect(); const c = e.touches ? e.touches[0] : e; return {x: c.clientX - r.left, y: c.clientY - r.top}; }
         function start(e) { if(e.type==='touchstart') e.preventDefault(); isDrawing = true; move(e); }
@@ -279,13 +265,12 @@
         document.getElementById('inspectionForm').onsubmit = (e) => {
             e.preventDefault();
             let score = 0;
-            for(let i=1; i<=totalQuestions; i++) {
+            for(let i=1; i<=qCountTotal; i++) {
                 const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                if(!sel) { alert("Complete el requerimiento " + i); return; }
+                if(!sel) { alert("Faltan requerimientos por evaluar."); return; }
                 score += parseInt(sel.value);
             }
-            
-            const pct = (score / (totalQuestions * 10)) * 100;
+            const pct = (score / (qCountTotal * 10)) * 100;
             const res = document.getElementById('resultsSection');
             const circ = document.getElementById('scoreCircle');
             const lvl = document.getElementById('scoreLevel');
@@ -300,7 +285,7 @@
                 desc.textContent = "Las medidas de seguridad apenas se están cumpliendo, el nivel de cumplimiento no es satisfactorio y se requiere intervención inmediata.";
             } else if(pct < 90) { 
                 circ.classList.add('bg-orange-500'); lvl.textContent = "REGULAR"; 
-                desc.textContent = "Las medidas de seguridad se están implementando, sin embargo, no se encuentran en un nivel óptimo. El cumplimiento puede ser mejorado.";
+                desc.textContent = "Las medidas de seguridad se están implementando sin embargo no se encuentran en un nivel óptimo. El cumplimiento puede ser mejorado.";
             } else { 
                 circ.classList.add('bg-green-600'); lvl.textContent = "ACEPTABLE"; 
                 desc.textContent = "La gestión tiene un nivel de cumplimiento y madurez adecuado y está en vías de la excelencia. Se están cumpliendo con las medidas de seguridad.";
