@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inspección de Bodegas Completa - Salud Ocupacional</title>
+    <title>Inspección de Bodegas - Salud Ocupacional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
@@ -46,11 +46,11 @@
             <form id="inspectionForm" class="p-6">
                 <section class="mb-8 print-border grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2 border-b pb-2"><h3 class="font-bold text-blue-800">DATOS GENERALES</h3></div>
-                    <input type="text" placeholder="Fecha de Inspección (Ej: AGOSTO 2025)" class="border p-2 rounded" required>
-                    <input type="text" placeholder="Bodega (Ej: CEDI CENTRAL ALAJUELA)" class="border p-2 rounded" required>
-                    <input type="text" placeholder="Nombre del Bodeguero" class="border p-2 rounded" required>
-                    <input type="text" placeholder="Encargado o Regente" class="border p-2 rounded" required>
-                    <input type="text" placeholder="Realizó (Inspector)" class="border p-2 rounded md:col-span-2" required>
+                    <input type="text" id="inputFecha" placeholder="Fecha de Inspección (Ej: AGOSTO 2025)" class="border p-2 rounded" required>
+                    <input type="text" id="inputBodega" placeholder="Bodega (Ej: CEDI CENTRAL ALAJUELA)" class="border p-2 rounded" required>
+                    <input type="text" id="inputBodeguero" placeholder="Nombre del Bodeguero" class="border p-2 rounded" required>
+                    <input type="text" id="inputRegente" placeholder="Encargado o Regente" class="border p-2 rounded" required>
+                    <input type="text" id="inputInspector" placeholder="Realizó (Inspector)" class="border p-2 rounded md:col-span-2" required>
                 </section>
 
                 <div class="bg-blue-50 p-4 rounded-md mb-6 border border-blue-200 text-xs text-blue-900 leading-relaxed">
@@ -70,7 +70,7 @@
 
                 <div class="mt-8 flex justify-end gap-4 no-print border-t pt-6">
                     <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-2 px-6 rounded">Imprimir / PDF</button>
-                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-6 rounded">Calcular Evaluación</button>
+                    <button type="submit" id="submitBtn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded">Calcular Evaluación</button>
                 </div>
             </form>
 
@@ -87,6 +87,8 @@
     </div>
 
     <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOxomF4xGjUnAZEbLtb-0w_-SUGidnWIn4e4V0m_3YMtXnAfihMcI37VA31NGQKPzx/exec";
+
         function checkLogin() {
             if (document.getElementById('username').value === 'Admin' && document.getElementById('password').value === 'SOdevelomping') {
                 document.getElementById('loginScreen').classList.add('hidden');
@@ -174,7 +176,7 @@
                 {n:63, t:"Carga bien asegurada en el vehículo."},
                 {n:64, t:"Estiba uniforme (polvos sobre líquidos, cajas sobre tambores)."},
                 {n:65, t:"Vehículo en buen estado físico y mecánico."},
-                {n:66, t:"Vehículo cargado nunca se deja sin vigilancia."},
+                {n:66, t:"No se deja el vehículo cargado sin vigilancia."},
                 {n:67, t:"Vehículo identificado con el nombre de la empresa."},
                 {n:68, t:"Equipo de protección básico presente en el vehículo."},
                 {n:69, t:"Kit anti derrame y extintor en el vehículo."},
@@ -262,15 +264,60 @@
         function end() { isDrawing = false; ctx.beginPath(); }
         function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
-        document.getElementById('inspectionForm').onsubmit = (e) => {
+        document.getElementById('inspectionForm').onsubmit = async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = "Enviando...";
+
             let score = 0;
+            let respuestasEnvio = {};
+
             for(let i=1; i<=qCountTotal; i++) {
                 const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                if(!sel) { alert("Faltan requerimientos por evaluar."); return; }
-                score += parseInt(sel.value);
+                const row = document.querySelector(`input[name="q${i}"]`).closest('tr');
+                const obs = row.querySelector('textarea').value;
+                
+                if(!sel) { 
+                    alert("Falta evaluar el punto " + i); 
+                    btn.disabled = false; btn.textContent = "Calcular Evaluación";
+                    return; 
+                }
+                
+                let val = parseInt(sel.value);
+                score += val;
+                respuestasEnvio["q" + i] = { pts: val, obs: obs };
             }
+
             const pct = (score / (qCountTotal * 10)) * 100;
+            const nivelFinal = pct <= 65 ? "INACEPTABLE" : (pct < 90 ? "REGULAR" : "ACEPTABLE");
+
+            // OBJETO PARA GOOGLE SHEETS
+            const payload = {
+                fecha: document.getElementById('inputFecha').value,
+                bodega: document.getElementById('inputBodega').value,
+                bodeguero: document.getElementById('inputBodeguero').value,
+                regente: document.getElementById('inputRegente').value,
+                inspector: document.getElementById('inputInspector').value,
+                puntajeTotal: score,
+                porcentaje: pct.toFixed(1),
+                nivel: nivelFinal,
+                respuestas: respuestasEnvio
+            };
+
+            try {
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify(payload)
+                });
+                alert("¡Inspección guardada exitosamente en Google Sheets!");
+            } catch (err) {
+                console.error(err);
+                alert("Error al conectar con la base de datos, pero se calcularon los resultados localmente.");
+            }
+
+            // MOSTRAR RESULTADOS VISUALES
             const res = document.getElementById('resultsSection');
             const circ = document.getElementById('scoreCircle');
             const lvl = document.getElementById('scoreLevel');
@@ -282,14 +329,17 @@
             
             if(pct <= 65) { 
                 circ.classList.add('bg-red-500'); lvl.textContent = "INACEPTABLE"; 
-                desc.textContent = "Las medidas de seguridad apenas se están cumpliendo, el nivel de cumplimiento no es satisfactorio y se requiere intervención inmediata.";
+                desc.textContent = "Las medidas de seguridad apenas se están cumpliendo, el nivel de cumplimiento no es satisfactorio.";
             } else if(pct < 90) { 
                 circ.classList.add('bg-orange-500'); lvl.textContent = "REGULAR"; 
-                desc.textContent = "Las medidas de seguridad se están implementando sin embargo no se encuentran en un nivel óptimo. El cumplimiento puede ser mejorado.";
+                desc.textContent = "Las medidas de seguridad se están implementando sin embargo no se encuentran en un nivel óptimo.";
             } else { 
                 circ.classList.add('bg-green-600'); lvl.textContent = "ACEPTABLE"; 
-                desc.textContent = "La gestión tiene un nivel de cumplimiento y madurez adecuado y está en vías de la excelencia. Se están cumpliendo con las medidas de seguridad.";
+                desc.textContent = "La gestión tiene un nivel de cumplimiento adecuado. Se cumplen las medidas de seguridad.";
             }
+            
+            btn.disabled = false;
+            btn.textContent = "Calcular Evaluación";
             res.scrollIntoView({behavior:'smooth'});
         };
 
