@@ -503,7 +503,7 @@ function render() {
                     <div class="photo-upload-zone no-print">
                         <label id="addbtn-${i}" class="block bg-white text-gray-500 text-[9px] font-bold p-1.5 rounded border border-dashed border-gray-400 text-center cursor-pointer hover:bg-blue-50 transition-colors">
                             📷 AGREGAR FOTO
-                            <input type="file" accept="image/*" multiple class="hidden"
+                            <input type="file" accept="image/*" capture="camera" multiple class="hidden"
                                 onchange="addPhotos(${i}, this.files); this.value=''">
                         </label>
                         <div id="preview-${i}" class="photo-grid-preview mt-1"></div>
