@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inspección de Bodegas - SO Soluciones</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         /* ===== PRINT STYLES ===== */
         @media print {
@@ -197,7 +197,7 @@
 
             <!-- ACTIONS -->
             <div class="mt-10 flex justify-end gap-4 no-print border-t pt-8">
-                <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-all uppercase text-xs">🖨️ PDF / Imprimir</button>
+                <button type="button" onclick="generatePDF()" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-all uppercase text-xs">🖨️ Generar PDF</button>
                 <button type="submit" id="submitBtn" class="bg-blue-700 hover:bg-blue-800 text-white font-black py-3 px-12 rounded-lg shadow-xl transition-all uppercase text-sm tracking-widest">Enviar y Calcular</button>
             </div>
         </form>
@@ -327,16 +327,54 @@ const dataConfig = [
 const photoStore = {};
 
 function addPhotos(idx, files) {
+
     if (!photoStore[idx]) photoStore[idx] = [];
+
     const remaining = 5 - photoStore[idx].length;
+
     const toAdd = Array.from(files).slice(0, remaining);
+
     toAdd.forEach(file => {
+
         const reader = new FileReader();
-        reader.onload = ev => {
-            photoStore[idx].push(ev.target.result);
-            renderPhotoPreviews(idx);
-            updatePrintPhotos(idx);
+
+        reader.onload = function(event) {
+
+            const img = new Image();
+
+            img.onload = function() {
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                let width = img.width;
+                let height = img.height;
+
+                // REDUCIR TAMAÑO
+                const maxWidth = 1200;
+
+                if (width > maxWidth) {
+                    height = height * (maxWidth / width);
+                    width = maxWidth;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // COMPRESIÓN
+                const compressedImage = canvas.toDataURL('image/jpeg', 0.7);
+
+                photoStore[idx].push(compressedImage);
+
+                renderPhotoPreviews(idx);
+                updatePrintPhotos(idx);
+            };
+
+            img.src = event.target.result;
         };
+
         reader.readAsDataURL(file);
     });
 }
@@ -535,6 +573,103 @@ window.addEventListener('afterprint', () => {
     }
 });
 
+// ============================================================
+// GENERAR PDF REAL
+// ============================================================
+
+async function generatePDF() {
+
+    const originalTitle = document.title;
+
+    document.title = 'Inspeccion_Bodega';
+
+    const buttons = document.querySelectorAll('button');
+
+    buttons.forEach(btn => {
+        btn.disabled = true;
+    });
+
+    // Mostrar fotos para PDF
+    for (let i = 1; i <= qCountTotal; i++) {
+
+        const printPhotos = document.getElementById(`printphotos-${i}`);
+
+        if (printPhotos) {
+            printPhotos.style.display = 'flex';
+        }
+
+        const badge = document.getElementById(`badge-${i}`);
+
+        if (badge) {
+            badge.style.display = 'flex';
+            badge.style.flexDirection = 'column';
+            badge.style.alignItems = 'center';
+        }
+    }
+
+    const element = document.getElementById('mainApp');
+
+    const options = {
+
+        margin: 0.3,
+
+        filename: `inspeccion_${Date.now()}.pdf`,
+
+        image: {
+            type: 'jpeg',
+            quality: 0.92
+        },
+
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            scrollY: 0
+        },
+
+        jsPDF: {
+            unit: 'in',
+            format: 'letter',
+            orientation: 'portrait'
+        },
+
+        pagebreak: {
+            mode: ['avoid-all', 'css', 'legacy']
+        }
+    };
+
+    try {
+
+        await html2pdf()
+            .set(options)
+            .from(element)
+            .save();
+
+    } catch (error) {
+
+        console.error('Error PDF:', error);
+
+        alert('Error generando PDF');
+
+    } finally {
+
+        // ocultar nuevamente
+        for (let i = 1; i <= qCountTotal; i++) {
+
+            const printPhotos = document.getElementById(`printphotos-${i}`);
+
+            if (printPhotos) {
+                printPhotos.style.display = 'none';
+            }
+        }
+
+        buttons.forEach(btn => {
+            btn.disabled = false;
+        });
+
+        document.title = originalTitle;
+    }
+}
 // ============================================================
 // SIGNATURE PAD
 // ============================================================
