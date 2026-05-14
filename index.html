@@ -6,344 +6,650 @@
     <title>Inspección de Bodegas - SO Soluciones</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* ===== PRINT STYLES ===== */
         @media print {
-            body { background-color: white; }
+            body { background-color: white !important; }
             .no-print { display: none !important; }
-            .print-border { border: 1px solid #e5e7eb; padding: 10px; margin-bottom: 10px; break-inside: avoid; }
-            input, textarea { border: none !important; resize: none; }
+            .print-section { border: 1px solid #d1d5db; padding: 12px; margin-bottom: 12px; break-inside: avoid; }
+            .rating-cell { min-width: 90px; }
+
+            /* Score badge print */
+            .score-badge { 
+                display: inline-flex !important; 
+                align-items: center; justify-content: center;
+                width: 36px; height: 36px; border-radius: 6px;
+                font-weight: 900; font-size: 13px; border: 2px solid;
+            }
+            .score-0  { background-color: #fee2e2 !important; color: #b91c1c !important; border-color: #ef4444 !important; }
+            .score-5  { background-color: #ffedd5 !important; color: #c2410c !important; border-color: #f97316 !important; }
+            .score-10 { background-color: #dcfce7 !important; color: #15803d !important; border-color: #16a34a !important; }
+
+            /* Photo grid in print */
+            .photo-grid { display: flex !important; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+            .photo-thumb { width: 90px !important; height: 70px !important; object-fit: cover; border-radius: 4px; border: 1px solid #e5e7eb; display: block !important; }
+            .photo-thumb-wrap { display: inline-block !important; }
+
+            table { width: 100% !important; }
+            textarea { border: none !important; resize: none; background: transparent; }
+            input[type="text"], input[type="date"] { border: none !important; background: transparent; }
+            .page-break { page-break-before: always; }
         }
+
+        /* ===== RADIO COLOR BUTTONS ===== */
         .color-radio input[type="radio"] { display: none; }
         .color-radio label {
             display: inline-flex; align-items: center; justify-content: center;
-            width: 32px; height: 32px; border-radius: 6px; cursor: pointer;
-            font-weight: bold; font-size: 12px; border: 2px solid transparent; transition: all 0.2s;
+            width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+            font-weight: 900; font-size: 13px; border: 2px solid transparent;
+            transition: all 0.18s; user-select: none;
         }
+        .color-radio label:hover { transform: scale(1.1); }
         .color-radio input[type="radio"]:checked + label {
-            transform: scale(1.1); border-color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
         }
-        #signature-pad { border: 2px dashed #cbd5e1; border-radius: 8px; cursor: crosshair; touch-action: none; }
+
+        /* Checked state colors */
+        .color-radio.score-0-radio input:checked + label  { background:#ef4444 !important; color:white !important; border-color:#b91c1c !important; }
+        .color-radio.score-5-radio input:checked + label  { background:#f97316 !important; color:white !important; border-color:#c2410c !important; }
+        .color-radio.score-10-radio input:checked + label { background:#16a34a !important; color:white !important; border-color:#15803d !important; }
+
+        /* ===== SIGNATURE ===== */
+        #signature-pad { border: 2px dashed #cbd5e1; border-radius: 8px; cursor: crosshair; touch-action: none; background: #f8fafc; }
+
+        /* ===== MODAL ===== */
         #successModal {
-            display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+            display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85);
             z-index: 100; align-items: center; justify-content: center; padding: 20px;
+        }
+
+        /* ===== PHOTO ZONE ===== */
+        .photo-upload-zone { border: 2px dashed #94a3b8; border-radius: 8px; padding: 8px; background: #f8fafc; }
+        .photo-grid-preview { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .photo-preview-item { position: relative; width: 70px; height: 60px; }
+        .photo-preview-item img { width: 70px; height: 60px; object-fit: cover; border-radius: 6px; border: 1px solid #e2e8f0; display: block; }
+        .photo-del-btn {
+            position: absolute; top: -5px; right: -5px;
+            background: #ef4444; color: white; border: none; border-radius: 50%;
+            width: 18px; height: 18px; font-size: 10px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; line-height: 1;
+        }
+
+        /* Print photo */
+        .photo-print-container { display: none; }
+        @media print {
+            .photo-print-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+            .photo-print-container img { width: 88px; height: 68px; object-fit: cover; border-radius: 4px; border: 1px solid #d1d5db; }
+            .no-print-row { display: none !important; }
+        }
+
+        /* Screen score display */
+        .score-display {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 8px;
+            font-weight: 900; font-size: 14px;
         }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
 
-    <div id="loginScreen" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-50">
-        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm text-center">
-            <h2 class="text-2xl font-bold text-blue-800 mb-6 uppercase">Acceso a SO Soluciones</h2>
-            <input type="text" id="username" placeholder="Usuario" class="mb-4 w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-blue-500">
-            <input type="password" id="password" placeholder="Contraseña" class="mb-6 w-full border border-gray-300 rounded-md p-2 outline-none focus:ring-2 focus:ring-blue-500">
-            <button onclick="checkLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded transition-colors">Ingresar</button>
+<!-- LOGIN -->
+<div id="loginScreen" class="fixed inset-0 bg-blue-900 flex items-center justify-center z-50">
+    <div class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-sm text-center">
+        <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
         </div>
+        <h2 class="text-2xl font-bold text-blue-800 mb-6 uppercase tracking-tight">SO Soluciones</h2>
+        <input type="text" id="username" placeholder="Usuario" class="mb-3 w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+        <input type="password" id="password" placeholder="Contraseña" class="mb-5 w-full border border-gray-300 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 text-sm" onkeydown="if(event.key==='Enter')checkLogin()">
+        <button onclick="checkLogin()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-lg transition-colors text-sm uppercase tracking-wider">Ingresar</button>
     </div>
+</div>
 
-    <div id="successModal">
-        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-8 text-center relative animate-in fade-in zoom-in duration-300">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+<!-- SUCCESS MODAL -->
+<div id="successModal">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full p-8 text-center relative">
+        <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-1">¡Inspección Finalizada!</h2>
+        <p class="text-gray-500 text-sm mb-6">Datos sincronizados correctamente.</p>
+        <div class="bg-gray-50 rounded-lg p-5 mb-6 border border-gray-200">
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Resultado del Cumplimiento</p>
+            <div id="modalScore" class="text-5xl font-black text-blue-800 mb-2">0%</div>
+            <div id="modalStatus" class="inline-block px-4 py-1 rounded-full text-xs font-bold uppercase"></div>
+        </div>
+        <p class="text-sm text-gray-500 italic mb-8 px-4 leading-relaxed">
+            "Estos datos estarán siendo analizados por un ingeniero para aportar sus recomendaciones técnicas a la brevedad."
+        </p>
+        <div class="space-y-3">
+            <a href="https://wa.me/50688068906?text=Hola,%20tengo%20una%20consulta%20referente%20al%20formulario%20de%20inspección" target="_blank"
+               class="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition-colors">
+                📱 Escribir a WhatsApp
+            </a>
+            <button onclick="closeModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-lg transition-colors">
+                Regresar al Formulario (PDF/Imprimir)
             </button>
-
-            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" /></svg>
-            </div>
-            <h2 class="text-2xl font-bold text-gray-800 mb-1">¡Inspección Finalizada!</h2>
-            <p class="text-gray-500 text-sm mb-6">Datos sincronizados correctamente.</p>
-            
-            <div class="bg-gray-50 rounded-lg p-5 mb-6 border border-gray-200">
-                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">Resultado del Cumplimiento</p>
-                <div id="modalScore" class="text-5xl font-black text-blue-800 mb-2">0%</div>
-                <div id="modalStatus" class="inline-block px-4 py-1 rounded-full text-xs font-bold uppercase"></div>
-            </div>
-
-            <p class="text-sm text-gray-500 italic mb-8 px-4 leading-relaxed">
-                "Estos datos estarán siendo analizados por un ingeniero para aportar sus recomendaciones técnicas a la brevedad."
-            </p>
-
-            <div class="space-y-3">
-                <a href="https://wa.me/50688068906?text=Hola,%20tengo%20una%20consulta%20referente%20al%20formulario%20de%20inspección" target="_blank" class="flex items-center justify-center gap-2 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg shadow-md transition-transform hover:scale-[1.02]">
-                    Escribir a WhatsApp
-                </a>
-                <button onclick="closeModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold py-3 rounded-lg transition-colors">
-                    Regresar al Formulario (PDF/Imprimir)
-                </button>
-                <button onclick="location.reload()" class="w-full text-gray-400 text-[10px] hover:underline uppercase tracking-widest font-bold py-2">
-                    Cerrar sesión y Nueva Inspección
-                </button>
-            </div>
+            <button onclick="location.reload()" class="w-full text-gray-400 text-[10px] hover:underline uppercase tracking-widest font-bold py-2">
+                Cerrar sesión y Nueva Inspección
+            </button>
         </div>
     </div>
+</div>
 
-    <div id="mainApp" class="hidden p-4 md:p-8 max-w-7xl mx-auto">
-        <div class="bg-white shadow-xl rounded-lg overflow-hidden">
-            <div class="bg-blue-800 text-white p-6 text-center">
-                <h1 class="text-3xl font-bold uppercase tracking-tighter">Inspección de Bodegas</h1>
-                <p class="text-sm opacity-90 uppercase mt-1">Salud Ocupacional - SO Soluciones</p>
+<!-- MAIN APP -->
+<div id="mainApp" class="hidden p-4 md:p-8 max-w-7xl mx-auto">
+    <div class="bg-white shadow-xl rounded-lg overflow-hidden">
+
+        <!-- HEADER -->
+        <div class="bg-blue-800 text-white p-6 text-center print-section" style="background:#1e3a8a !important; color:white !important;">
+            <h1 class="text-3xl font-bold uppercase tracking-tighter">Inspección de Bodegas</h1>
+            <p class="text-sm opacity-90 uppercase mt-1">Salud Ocupacional — SO Soluciones</p>
+        </div>
+
+        <form id="inspectionForm" class="p-6">
+
+            <!-- DATOS GENERALES -->
+            <section class="mb-8 print-section grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2 border-b pb-2"><h3 class="font-bold text-blue-800 uppercase text-sm">Datos Generales</h3></div>
+                <div class="flex flex-col">
+                    <label class="text-[10px] font-bold text-gray-400 ml-1 uppercase mb-1">Fecha</label>
+                    <input type="date" id="inputFecha" class="border p-2 rounded outline-none focus:ring-2 focus:ring-blue-200" required>
+                </div>
+                <div class="flex flex-col">
+                    <label class="text-[10px] font-bold text-gray-400 ml-1 uppercase mb-1">Bodega / Localización</label>
+                    <input type="text" id="inputBodega" placeholder="Nombre de la Bodega" class="border p-2 rounded" required>
+                </div>
+                <input type="text" id="inputBodeguero" placeholder="Nombre del Bodeguero" class="border p-2 rounded" required>
+                <input type="text" id="inputRegente" placeholder="Encargado o Regente" class="border p-2 rounded" required>
+                <input type="text" id="inputInspector" placeholder="Realizado por (Inspector)" class="border p-2 rounded md:col-span-2" required>
+            </section>
+
+            <!-- CONTEXT BOX -->
+            <div class="bg-blue-50 p-5 rounded-lg mb-8 border border-blue-200 text-[11px] text-blue-900 leading-relaxed shadow-sm">
+                <h4 class="font-black mb-3 uppercase border-b border-blue-200 pb-1 text-xs text-blue-800">1. GENERALES (Contexto Normativo)</h4>
+                <p class="mb-2 italic">• Corresponde al Ministerio de Salud velar porque los establecimientos donde se expendan agroquímicos reúnan condiciones de seguridad para disminuir riesgos a la salud y al ambiente.</p>
+                <p class="mb-2">• Los plaguicidas son sustancias altamente tóxicas e inflamables; su manejo inadecuado causa daños graves.</p>
+                <p>• <b>Instrucciones:</b> Evalúe cada punto con <span class="font-black text-red-600">0 (Inaceptable)</span>, <span class="font-black text-orange-500">5 (Mejora)</span> o <span class="font-black text-green-700">10 (Aceptable)</span>. Use la cámara para documentar hallazgos (máx. 5 fotos por ítem).</p>
             </div>
 
-            <form id="inspectionForm" class="p-6">
-                <section class="mb-8 print-border grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2 border-b pb-2"><h3 class="font-bold text-blue-800 uppercase">Datos Generales</h3></div>
-                    <div class="flex flex-col">
-                        <label class="text-[10px] font-bold text-gray-400 ml-1 uppercase">Fecha (Calendario)</label>
-                        <input type="date" id="inputFecha" class="border p-2 rounded outline-none focus:ring-2 focus:ring-blue-200" required>
-                    </div>
-                    <div class="flex flex-col">
-                        <label class="text-[10px] font-bold text-gray-400 ml-1 uppercase">Bodega / Localización</label>
-                        <input type="text" id="inputBodega" placeholder="Nombre de la Bodega" class="border p-2 rounded" required>
-                    </div>
-                    <input type="text" id="inputBodeguero" placeholder="Nombre del Bodeguero" class="border p-2 rounded" required>
-                    <input type="text" id="inputRegente" placeholder="Encargado o Regente" class="border p-2 rounded" required>
-                    <input type="text" id="inputInspector" placeholder="Realizado por (Inspector)" class="border p-2 rounded md:col-span-2" required>
-                </section>
+            <!-- QUESTIONS -->
+            <div id="questionsContainer" class="space-y-6"></div>
 
-                <div class="bg-blue-50 p-5 rounded-lg mb-8 border border-blue-200 text-[11px] text-blue-900 leading-relaxed shadow-sm">
-                    <h4 class="font-black mb-3 uppercase border-b border-blue-200 pb-1 text-xs text-blue-800">1. GENERALES (Contexto Normativo)</h4>
-                    <p class="mb-2 italic">• Corresponde al Ministerio de Salud velar porque los establecimientos donde se expendan agroquímicos reúnan condiciones de seguridad para disminuir riesgos a la salud y al ambiente.</p>
-                    <p class="mb-2">• Los plaguicidas son sustancias altamente tóxicas e inflamables; su manejo inadecuado causa daños graves.</p>
-                    <p>• <b>Instrucciones:</b> Evalúe cada punto con 10 (Aceptable), 5 (Mejora) o 0 (Inaceptable). Use la cámara para documentar hallazgos.</p>
-                </div>
+            <!-- OBSERVACIONES FINALES -->
+            <section class="mt-10 pt-8 border-t-2 print-section">
+                <h3 class="font-bold text-blue-800 uppercase text-sm tracking-widest mb-4">Observaciones Finales del Inspector</h3>
+                <textarea id="observacionesFinales" rows="6"
+                    placeholder="Anote aquí cualquier observación general, comentario adicional o recomendación técnica sobre la inspección realizada..."
+                    class="w-full border border-gray-300 rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-blue-300 resize-y"
+                    style="min-height: 120px;"></textarea>
+            </section>
 
-                <div id="questionsContainer" class="space-y-6"></div>
+            <!-- FIRMA -->
+            <section class="mt-8 pt-6 border-t print-section text-center">
+                <h3 class="font-bold text-blue-800 mb-4 uppercase text-sm tracking-widest">Firma del Inspector</h3>
+                <canvas id="signature-pad" width="500" height="180" class="mx-auto w-full max-w-md shadow-inner"></canvas>
+                <button type="button" onclick="clearSignature()" class="mt-3 text-red-600 text-xs font-bold no-print uppercase tracking-tighter hover:underline">✕ Limpiar Trazo</button>
+            </section>
 
-                <section class="mt-10 pt-8 border-t-2 print-border text-center">
-                    <h3 class="font-bold text-blue-800 mb-4 uppercase text-sm tracking-widest">Firma del Inspector</h3>
-                    <canvas id="signature-pad" width="400" height="180" class="bg-gray-50 mx-auto w-full max-w-md shadow-inner"></canvas>
-                    <button type="button" onclick="clearSignature()" class="mt-3 text-red-600 text-xs font-bold no-print uppercase tracking-tighter hover:underline">Limpiar Trazo</button>
-                </section>
-
-                <div class="mt-10 flex justify-end gap-4 no-print border-t pt-8">
-                    <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-all uppercase text-xs">PDF / Imprimir</button>
-                    <button type="submit" id="submitBtn" class="bg-blue-700 hover:bg-blue-800 text-white font-black py-3 px-12 rounded-lg shadow-xl transition-all uppercase text-sm tracking-widest">Enviar y Calcular</button>
-                </div>
-            </form>
-        </div>
+            <!-- ACTIONS -->
+            <div class="mt-10 flex justify-end gap-4 no-print border-t pt-8">
+                <button type="button" onclick="window.print()" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-all uppercase text-xs">🖨️ PDF / Imprimir</button>
+                <button type="submit" id="submitBtn" class="bg-blue-700 hover:bg-blue-800 text-white font-black py-3 px-12 rounded-lg shadow-xl transition-all uppercase text-sm tracking-widest">Enviar y Calcular</button>
+            </div>
+        </form>
     </div>
+</div>
 
-    <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOxomF4xGjUnAZEbLtb-0w_-SUGidnWIn4e4V0m_3YMtXnAfihMcI37VA31NGQKPzx/exec";
+<script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzOxomF4xGjUnAZEbLtb-0w_-SUGidnWIn4e4V0m_3YMtXnAfihMcI37VA31NGQKPzx/exec";
 
-        function checkLogin() {
-            if (document.getElementById('username').value === 'Admin' && document.getElementById('password').value === 'SOdevelomping') {
-                document.getElementById('loginScreen').classList.add('hidden');
-                document.getElementById('mainApp').classList.remove('hidden');
-                initSignaturePad();
-            } else {
-                alert("Credenciales incorrectas");
-            }
-        }
+// ============================================================
+// LOGIN
+// ============================================================
+function checkLogin() {
+    const u = document.getElementById('username').value;
+    const p = document.getElementById('password').value;
+    if (u === 'Admin' && p === 'SOdevelomping') {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        initSignaturePad();
+    } else {
+        alert("Credenciales incorrectas");
+    }
+}
 
-        function closeModal() {
-            document.getElementById('successModal').style.display = 'none';
-        }
+function closeModal() {
+    document.getElementById('successModal').style.display = 'none';
+}
 
-        // --- LISTADO DE LOS 75 ÍTEMS COMPLETOS ---
-        const dataConfig = [
-            { category: "2. UBICACIÓN", items: [
-                {n:1, t:"Distancia mínima de 3 metros del límite de propiedad y de la vía pública."},
-                {n:2, t:"Distancia mínima de 3 metros de otras edificaciones (excepto afines)."},
-                {n:3, t:"Ubicados frente a vía pública o con acceso no menor de 5 metros."},
-                {n:4, t:"Distancia mínima de 10 metros del limite de propiedad o vía pública."},
-                {n:5, t:"Acceso a vía pública de ancho no menor de 5 metros."},
-                {n:6, t:"Protección de fuentes de agua según Ley Forestal."},
-                {n:7, t:"No ubicarse a menos de 50 metros de centros educativos u hospitales."}
-            ]},
-            { category: "3. CONDICIONES FISICO SANITARIAS", items: [
-                {n:8, t:"Materiales resistentes al fuego, lisos y no porosos."},
-                {n:9, t:"Recipiente vacío para derrames y materia absorbente rotulada."},
-                {n:10, t:"Residuos de derrames enterrados a +40cm lejos de agua."},
-                {n:11, t:"Pisos con desnivel del 1% hacia retención."},
-                {n:12, t:"Techos con altura mínima de 2.5 metros."},
-                {n:13, t:"Ventilación natural no inferior al 20% de la superficie."},
-                {n:14, t:"Extintores ABC cargados cada 125 m2."},
-                {n:15, t:"Instalaciones eléctricas entubadas."},
-                {n:16, t:"Separación de oficinas de zona de almacenaje."},
-                {n:17, t:"Servicios sanitarios y duchas en buen estado."},
-                {n:18, t:"Disponibilidad y uso de EPP completo."},
-                {n:19, t:"Duchas de emergencia y lavaojos rotulados."},
-                {n:20, t:"Separación de áreas de comedor y trabajo."}
-            ]},
-            { category: "4. ALMACENAMIENTO", items: [
-                {n:21, t:"Estantes resistentes al fuego e impermeables."},
-                {n:22, t:"Almacenamiento permite circulación de aire."},
-                {n:23, t:"Altura de estiba no mayor a 3/4 partes del total."},
-                {n:24, t:"Sin luz artificial directa sobre estantes."},
-                {n:25, t:"Productos identificados y agrupados por afinidad."},
-                {n:26, t:"Inflamables separados por pared incombustible."},
-                {n:27, t:"Separación estantes-pared según metraje."},
-                {n:28, t:"Pasillos entre estibas iguales o mayores a 80 cm."},
-                {n:29, t:"Zonas inundables: productos a altura 20% sobre nivel máx."}
-            ]},
-            { category: "5. ORGANIZACIÓN DEL TRABAJO", items: [
-                {n:30, t:"Personal de carga usa overol o manga larga."},
-                {n:31, t:"Personal de ventas usa vestimenta adecuada."},
-                {n:32, t:"Personal sometido a examen médico periódico."},
-                {n:33, t:"Análisis de colinesterasa refrendado."},
-                {n:34, t:"Personal entrenado por Regente Agrónomo."},
-                {n:35, t:"Rótulos claros sobre riesgos asociados."},
-                {n:36, t:"Hojas de Seguridad (MSDS) disponibles."},
-                {n:37, t:"Botiquín completo y personal capacitado."},
-                {n:38, t:"Rótulo visible con números de emergencia."},
-                {n:39, t:"Producto deteriorado aislado para devolución."},
-                {n:40, t:"Desechos manejados según Plan de Manejo."},
-                {n:41, t:"Trabajadores NO llevan EPP a su domicilio."},
-                {n:42, t:"Prohibición de comer, fumar o beber en áreas."}
-            ]},
-            { category: "6. ASPECTOS DE REGENCIA DE MAG", items: [
-                {n:43, t:"Permiso Sanitario de Funcionamiento vigente."},
-                {n:44, t:"Patentes municipales en lugar visible."},
-                {n:45, t:"Certificados del Colegio de Agrónomos visibles."},
-                {n:46, t:"Personal con curso MAG Uso Seguro."},
-                {n:47, t:"Informes mensuales al día."},
-                {n:48, t:"Libro de productos restringidos actualizado."},
-                {n:49, t:"Archivados informes de visitas externas."},
-                {n:50, t:"Hojas MSDS de cada producto en archivo."},
-                {n:51, t:"Productos separados por clase."},
-                {n:52, t:"Pasillos libres y demarcados."},
-                {n:53, t:"Bodega con rotulación de seguridad."},
-                {n:54, t:"Ausencia de productos derramados o rotos."},
-                {n:55, t:"Ausencia de productos vencidos."},
-                {n:56, t:"Envases con triple lavado en bolsas seguras."},
-                {n:57, t:"Orden y Limpieza general."},
-                {n:58, t:"EPP en buenas condiciones."},
-                {n:59, t:"Equipo de recolección de derrames completo."},
-                {n:60, t:"Examen de colinesterasa cada 3 meses."}
-            ]},
-            { category: "7. TRANSPORTE DE AGROQUÍMICOS", items: [
-                {n:61, t:"No transporta químicos en cabina con pasajeros."},
-                {n:62, t:"No transporta junto a ropa o alimentos."},
-                {n:63, t:"Verificación de envases al cargar."},
-                {n:64, t:"No comer o fumar durante carga."},
-                {n:65, t:"Carga bien asegurada."},
-                {n:66, t:"Estiba uniforme de productos."},
-                {n:67, t:"Vehículo en buen estado físico/mecánico."},
-                {n:68, t:"Vehículo cargado con vigilancia."},
-                {n:69, t:"Vehículo identificado con nombre de empresa."},
-                {n:70, t:"EPP básico presente en vehículo."},
-                {n:71, t:"Kit antiderrames y extintor en vehículo."},
-                {n:72, t:"Hojas MSDS presentes (QR)."},
-                {n:73, t:"Licencia al día y adecuada."},
-                {n:74, t:"RTV y Marchamo al día."}
-            ]},
-            { category: "8. OBLIGACIONES", items: [
-                {n:75, t:"Representante y Regente cumplen las disposiciones del Reglamento."}
-            ]}
-        ];
+// ============================================================
+// DATA: 75 ITEMS, 8 AREAS
+// ============================================================
+const dataConfig = [
+    { category: "2. UBICACIÓN", items: [
+        {n:1,  t:"Distancia mínima de 3 metros del límite de propiedad y de la vía pública."},
+        {n:2,  t:"Distancia mínima de 3 metros de otras edificaciones (excepto afines)."},
+        {n:3,  t:"Ubicados frente a vía pública o con acceso no menor de 5 metros."},
+        {n:4,  t:"Distancia mínima de 10 metros del limite de propiedad o vía pública."},
+        {n:5,  t:"Acceso a vía pública de ancho no menor de 5 metros."},
+        {n:6,  t:"Protección de fuentes de agua según Ley Forestal."},
+        {n:7,  t:"No ubicarse a menos de 50 metros de centros educativos u hospitales."}
+    ]},
+    { category: "3. CONDICIONES FISICO SANITARIAS", items: [
+        {n:8,  t:"Materiales resistentes al fuego, lisos y no porosos."},
+        {n:9,  t:"Recipiente vacío para derrames y materia absorbente rotulada."},
+        {n:10, t:"Residuos de derrames enterrados a +40cm lejos de agua."},
+        {n:11, t:"Pisos con desnivel del 1% hacia retención."},
+        {n:12, t:"Techos con altura mínima de 2.5 metros."},
+        {n:13, t:"Ventilación natural no inferior al 20% de la superficie."},
+        {n:14, t:"Extintores ABC cargados cada 125 m2."},
+        {n:15, t:"Instalaciones eléctricas entubadas."},
+        {n:16, t:"Separación de oficinas de zona de almacenaje."},
+        {n:17, t:"Servicios sanitarios y duchas en buen estado."},
+        {n:18, t:"Disponibilidad y uso de EPP completo."},
+        {n:19, t:"Duchas de emergencia y lavaojos rotulados."},
+        {n:20, t:"Separación de áreas de comedor y trabajo."}
+    ]},
+    { category: "4. ALMACENAMIENTO", items: [
+        {n:21, t:"Estantes resistentes al fuego e impermeables."},
+        {n:22, t:"Almacenamiento permite circulación de aire."},
+        {n:23, t:"Altura de estiba no mayor a 3/4 partes del total."},
+        {n:24, t:"Sin luz artificial directa sobre estantes."},
+        {n:25, t:"Productos identificados y agrupados por afinidad."},
+        {n:26, t:"Inflamables separados por pared incombustible."},
+        {n:27, t:"Separación estantes-pared según metraje."},
+        {n:28, t:"Pasillos entre estibas iguales o mayores a 80 cm."},
+        {n:29, t:"Zonas inundables: productos a altura 20% sobre nivel máx."}
+    ]},
+    { category: "5. ORGANIZACIÓN DEL TRABAJO", items: [
+        {n:30, t:"Personal de carga usa overol o manga larga."},
+        {n:31, t:"Personal de ventas usa vestimenta adecuada."},
+        {n:32, t:"Personal sometido a examen médico periódico."},
+        {n:33, t:"Análisis de colinesterasa refrendado."},
+        {n:34, t:"Personal entrenado por Regente Agrónomo."},
+        {n:35, t:"Rótulos claros sobre riesgos asociados."},
+        {n:36, t:"Hojas de Seguridad (MSDS) disponibles."},
+        {n:37, t:"Botiquín completo y personal capacitado."},
+        {n:38, t:"Rótulo visible con números de emergencia."},
+        {n:39, t:"Producto deteriorado aislado para devolución."},
+        {n:40, t:"Desechos manejados según Plan de Manejo."},
+        {n:41, t:"Trabajadores NO llevan EPP a su domicilio."},
+        {n:42, t:"Prohibición de comer, fumar o beber en áreas."}
+    ]},
+    { category: "6. ASPECTOS DE REGENCIA DE MAG", items: [
+        {n:43, t:"Permiso Sanitario de Funcionamiento vigente."},
+        {n:44, t:"Patentes municipales en lugar visible."},
+        {n:45, t:"Certificados del Colegio de Agrónomos visibles."},
+        {n:46, t:"Personal con curso MAG Uso Seguro."},
+        {n:47, t:"Informes mensuales al día."},
+        {n:48, t:"Libro de productos restringidos actualizado."},
+        {n:49, t:"Archivados informes de visitas externas."},
+        {n:50, t:"Hojas MSDS de cada producto en archivo."},
+        {n:51, t:"Productos separados por clase."},
+        {n:52, t:"Pasillos libres y demarcados."},
+        {n:53, t:"Bodega con rotulación de seguridad."},
+        {n:54, t:"Ausencia de productos derramados o rotos."},
+        {n:55, t:"Ausencia de productos vencidos."},
+        {n:56, t:"Envases con triple lavado en bolsas seguras."},
+        {n:57, t:"Orden y Limpieza general."},
+        {n:58, t:"EPP en buenas condiciones."},
+        {n:59, t:"Equipo de recolección de derrames completo."},
+        {n:60, t:"Examen de colinesterasa cada 3 meses."}
+    ]},
+    { category: "7. TRANSPORTE DE AGROQUÍMICOS", items: [
+        {n:61, t:"No transporta químicos en cabina con pasajeros."},
+        {n:62, t:"No transporta junto a ropa o alimentos."},
+        {n:63, t:"Verificación de envases al cargar."},
+        {n:64, t:"No comer o fumar durante carga."},
+        {n:65, t:"Carga bien asegurada."},
+        {n:66, t:"Estiba uniforme de productos."},
+        {n:67, t:"Vehículo en buen estado físico/mecánico."},
+        {n:68, t:"Vehículo cargado con vigilancia."},
+        {n:69, t:"Vehículo identificado con nombre de empresa."},
+        {n:70, t:"EPP básico presente en vehículo."},
+        {n:71, t:"Kit antiderrames y extintor en vehículo."},
+        {n:72, t:"Hojas MSDS presentes (QR)."},
+        {n:73, t:"Licencia al día y adecuada."},
+        {n:74, t:"RTV y Marchamo al día."}
+    ]},
+    { category: "8. OBLIGACIONES", items: [
+        {n:75, t:"Representante y Regente cumplen las disposiciones del Reglamento."}
+    ]}
+];
 
-        const scale = [{ v: 0, c: "#ef4444", l: "0" }, { v: 5, c: "#f97316", l: "5" }, { v: 10, c: "#16a34a", l: "10" }];
-        let qCountTotal = 0;
+// ============================================================
+// PHOTO STORE  { globalIdx -> [dataURL, ...] }
+// ============================================================
+const photoStore = {};
 
-        function render() {
-            const container = document.getElementById('questionsContainer');
-            let html = ''; let globalIdx = 1;
-            
-            dataConfig.forEach((sec) => {
-                html += `<div class="bg-white border rounded shadow-md overflow-hidden">
-                    <div class="bg-gray-100 p-3 font-bold text-blue-900 border-b text-[11px] uppercase tracking-widest">${sec.category}</div>
-                    <div class="overflow-x-auto"><table class="w-full text-[11px] text-left">
-                        <thead class="bg-gray-50 text-gray-400 border-b">
-                            <tr><th class="p-3 w-[45%]">Requerimiento</th><th class="p-3 text-center">Pts</th><th class="p-3">Observación / Foto</th></tr>
-                        </thead><tbody>`;
-                sec.items.forEach(item => {
-                    let radios = `<div class="flex gap-1 justify-center">`;
-                    scale.forEach(s => {
-                        radios += `<div class="color-radio">
-                            <input type="radio" id="g${globalIdx}_${s.v}" name="q${globalIdx}" value="${s.v}" required>
-                            <label for="g${globalIdx}_${s.v}" style="color: ${s.c}; border: 1px solid ${s.c}; background: ${s.c}15" onclick="selLabel(this, '${s.c}', 'q${globalIdx}')">${s.l}</label>
-                        </div>`;
-                    });
-                    radios += `</div>`;
-                    html += `<tr class="border-b hover:bg-gray-50">
-                        <td class="p-3 align-top font-medium text-gray-700">${item.n}. ${item.t}</td>
-                        <td class="p-3 align-top">${radios}</td>
-                        <td class="p-3 align-top">
-                            <textarea class="w-full border rounded p-1 text-[10px] mb-1 outline-none focus:ring-1 focus:ring-blue-300" rows="1" placeholder="Hallazgos..."></textarea>
-                            <label class="block bg-gray-50 text-gray-500 text-[9px] font-bold p-1 rounded border border-dashed border-gray-300 text-center cursor-pointer hover:bg-blue-50 no-print transition-colors">
-                                📷 FOTO
-                                <input type="file" accept="image/*" capture="environment" class="hidden">
-                            </label>
-                        </td>
-                    </tr>`;
-                    globalIdx++;
-                });
-                html += `</tbody></table></div></div>`;
+function addPhotos(idx, files) {
+    if (!photoStore[idx]) photoStore[idx] = [];
+    const remaining = 5 - photoStore[idx].length;
+    const toAdd = Array.from(files).slice(0, remaining);
+    toAdd.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            photoStore[idx].push(ev.target.result);
+            renderPhotoPreviews(idx);
+            updatePrintPhotos(idx);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+function removePhoto(idx, photoIdx) {
+    if (photoStore[idx]) {
+        photoStore[idx].splice(photoIdx, 1);
+        renderPhotoPreviews(idx);
+        updatePrintPhotos(idx);
+    }
+}
+
+function renderPhotoPreviews(idx) {
+    const container = document.getElementById(`preview-${idx}`);
+    if (!container) return;
+    container.innerHTML = '';
+    (photoStore[idx] || []).forEach((src, pi) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'photo-preview-item';
+        wrap.innerHTML = `
+            <img src="${src}" alt="foto ${pi+1}">
+            <button type="button" class="photo-del-btn no-print" onclick="removePhoto(${idx},${pi})">✕</button>
+        `;
+        container.appendChild(wrap);
+    });
+    // Update add button state
+    const btn = document.getElementById(`addbtn-${idx}`);
+    if (btn) {
+        const count = (photoStore[idx] || []).length;
+        btn.textContent = count >= 5 ? '📷 Máx. fotos alcanzado' : `📷 AGREGAR FOTO ${count > 0 ? `(${count}/5)` : ''}`;
+        btn.disabled = count >= 5;
+        btn.style.opacity = count >= 5 ? '0.5' : '1';
+    }
+}
+
+function updatePrintPhotos(idx) {
+    const pc = document.getElementById(`printphotos-${idx}`);
+    if (!pc) return;
+    pc.innerHTML = '';
+    (photoStore[idx] || []).forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.cssText = 'width:90px;height:70px;object-fit:cover;border-radius:4px;border:1px solid #d1d5db;';
+        pc.appendChild(img);
+    });
+}
+
+// ============================================================
+// RENDER QUESTIONS
+// ============================================================
+const scaleOpts = [
+    { v: 0,  cssClass: 'score-0-radio',  color: '#ef4444', bg: '#fee2e2', label: '0'  },
+    { v: 5,  cssClass: 'score-5-radio',  color: '#f97316', bg: '#ffedd5', label: '5'  },
+    { v: 10, cssClass: 'score-10-radio', color: '#16a34a', bg: '#dcfce7', label: '10' }
+];
+
+let qCountTotal = 0;
+
+function render() {
+    const container = document.getElementById('questionsContainer');
+    let html = '';
+    let globalIdx = 1;
+
+    dataConfig.forEach(sec => {
+        html += `
+        <div class="bg-white border rounded-lg shadow-md overflow-hidden print-section">
+            <div class="bg-gray-100 p-3 font-bold text-blue-900 border-b text-[11px] uppercase tracking-widest">${sec.category}</div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-[11px] text-left">
+                    <thead class="bg-gray-50 text-gray-400 border-b">
+                        <tr>
+                            <th class="p-3 w-[38%]">Requerimiento</th>
+                            <th class="p-3 text-center w-[110px]">Calificación</th>
+                            <th class="p-3">Observación / Evidencia Fotográfica</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+        sec.items.forEach(item => {
+            const i = globalIdx;
+
+            // Build radio buttons
+            let radios = `<div class="flex gap-2 justify-center items-center">`;
+            scaleOpts.forEach(s => {
+                radios += `
+                <div class="color-radio ${s.cssClass}">
+                    <input type="radio" id="g${i}_${s.v}" name="q${i}" value="${s.v}" required onchange="onScoreChange(${i},${s.v})">
+                    <label for="g${i}_${s.v}"
+                        style="color:${s.color}; border-color:${s.color}; background:${s.bg};"
+                        title="${s.v === 0 ? 'Inaceptable' : s.v === 5 ? 'Mejora' : 'Aceptable'}"
+                    >${s.label}</label>
+                </div>`;
             });
-            qCountTotal = globalIdx - 1; container.innerHTML = html;
-        }
+            radios += `</div>`;
 
-        function selLabel(el, c, g) {
-            document.querySelectorAll(`input[name="${g}"] + label`).forEach(l => {
-                l.style.background = l.style.borderColor + '15'; l.style.color = l.style.borderColor;
-            });
-            el.style.background = c; el.style.color = 'white';
-        }
+            // Score display badge (shown after selection in print)
+            const scoreBadgeId = `badge-${i}`;
 
-        // --- FIRMA ---
-        let canvas, ctx, isDrawing = false;
-        function initSignaturePad() {
-            canvas = document.getElementById('signature-pad'); ctx = canvas.getContext('2d');
-            const evs = [['mousedown', start], ['mousemove', move], ['mouseup', end], ['touchstart', start], ['touchmove', move], ['touchend', end]];
-            evs.forEach(e => canvas.addEventListener(e[0], e[1], {passive: false}));
-        }
-        function getPos(e) { const r = canvas.getBoundingClientRect(); const c = e.touches ? e.touches[0] : e; return {x: c.clientX - r.left, y: c.clientY - r.top}; }
-        function start(e) { if(e.type==='touchstart') e.preventDefault(); isDrawing = true; move(e); }
-        function move(e) { if(!isDrawing) return; if(e.type==='touchmove') e.preventDefault(); const p = getPos(e); ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(p.x, p.y); }
-        function end() { isDrawing = false; ctx.beginPath(); }
-        function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+            html += `
+            <tr class="border-b hover:bg-gray-50 align-top" id="row-${i}">
+                <td class="p-3 font-medium text-gray-700 text-[11px] leading-relaxed">
+                    <span class="font-black text-blue-800">${item.n}.</span> ${item.t}
+                </td>
+                <td class="p-3 text-center">
+                    <div class="no-print">${radios}</div>
+                    <!-- PRINT: score badge rendered by JS after selection -->
+                    <div id="${scoreBadgeId}" class="hidden print-score-badge justify-center items-center">
+                        <!-- filled by onScoreChange -->
+                    </div>
+                    <!-- Always visible label below radios on screen, and score badge in print -->
+                    <div id="label-${i}" class="mt-1 text-[9px] font-bold text-gray-400 no-print"></div>
+                </td>
+                <td class="p-3">
+                    <textarea name="obs${i}" rows="2" placeholder="Hallazgos u observaciones..."
+                        class="w-full border rounded p-1.5 text-[10px] mb-2 outline-none focus:ring-1 focus:ring-blue-300 resize-y"
+                        style="min-height:42px;"></textarea>
 
-        // --- ENVÍO ---
-        document.getElementById('inspectionForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.textContent = "ENVIANDO...";
+                    <!-- Photo upload zone (no-print) -->
+                    <div class="photo-upload-zone no-print">
+                        <label id="addbtn-${i}" class="block bg-white text-gray-500 text-[9px] font-bold p-1.5 rounded border border-dashed border-gray-400 text-center cursor-pointer hover:bg-blue-50 transition-colors">
+                            📷 AGREGAR FOTO
+                            <input type="file" accept="image/*" capture="environment" multiple class="hidden"
+                                onchange="addPhotos(${i}, this.files); this.value=''">
+                        </label>
+                        <div id="preview-${i}" class="photo-grid-preview mt-1"></div>
+                    </div>
 
-            let score = 0; let respuestasEnvio = {};
-            for(let i=1; i<=qCountTotal; i++) {
-                const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                if(!sel) { alert("Falta evaluar punto " + i); btn.disabled = false; return; }
-                const row = document.querySelector(`input[name="q${i}"]`).closest('tr');
-                const obs = row.querySelector('textarea').value;
-                score += parseInt(sel.value);
-                respuestasEnvio["q" + i] = { pts: parseInt(sel.value), obs: obs };
+                    <!-- Print photos container (hidden on screen, shown in print) -->
+                    <div id="printphotos-${i}" class="photo-print-container" style="display:none;flex-wrap:wrap;gap:5px;margin-top:4px;"></div>
+                </td>
+            </tr>`;
+
+            globalIdx++;
+        });
+
+        html += `</tbody></table></div></div>`;
+    });
+
+    qCountTotal = globalIdx - 1;
+    container.innerHTML = html;
+}
+
+// Called when a score is selected — updates print badge & screen label
+function onScoreChange(idx, val) {
+    const badge = document.getElementById(`badge-${idx}`);
+    const label = document.getElementById(`label-${idx}`);
+    let bg, color, border, text;
+    if (val === 0)  { bg='#fee2e2'; color='#b91c1c'; border='#ef4444'; text='INACEPTABLE'; }
+    if (val === 5)  { bg='#ffedd5'; color='#c2410c'; border='#f97316'; text='MEJORA'; }
+    if (val === 10) { bg='#dcfce7'; color='#15803d'; border='#16a34a'; text='ACEPTABLE'; }
+
+    // badge for print
+    badge.innerHTML = `
+        <div style="
+            display:inline-flex; align-items:center; justify-content:center;
+            width:40px; height:40px; border-radius:8px;
+            background:${bg}; color:${color}; border:2.5px solid ${border};
+            font-weight:900; font-size:15px;
+        ">${val}</div>
+        <div style="font-size:8px;color:${color};font-weight:700;margin-top:3px;">${text}</div>
+    `;
+    badge.style.display = 'flex';
+    badge.style.flexDirection = 'column';
+    badge.style.alignItems = 'center';
+
+    // screen label
+    if (label) {
+        label.textContent = text;
+        label.style.color = color;
+    }
+
+    // Highlight row background slightly on screen
+    const row = document.getElementById(`row-${idx}`);
+    if (row) {
+        row.style.backgroundColor = val === 0 ? '#fff5f5' : val === 5 ? '#fffbf5' : '#f0fdf4';
+    }
+}
+
+// ============================================================
+// PRINT: inject print-score badges visibility
+// Before printing, show print containers and hide screen ones
+// ============================================================
+window.addEventListener('beforeprint', () => {
+    // Show print photo containers
+    for (let i = 1; i <= qCountTotal; i++) {
+        const pp = document.getElementById(`printphotos-${i}`);
+        if (pp) pp.style.display = 'flex';
+        const badge = document.getElementById(`badge-${i}`);
+        if (badge) badge.classList.add('print-visible');
+    }
+});
+window.addEventListener('afterprint', () => {
+    for (let i = 1; i <= qCountTotal; i++) {
+        const pp = document.getElementById(`printphotos-${i}`);
+        if (pp) pp.style.display = 'none';
+    }
+});
+
+// ============================================================
+// SIGNATURE PAD
+// ============================================================
+let canvas, ctx, isDrawing = false;
+
+function initSignaturePad() {
+    canvas = document.getElementById('signature-pad');
+    ctx = canvas.getContext('2d');
+    const evs = [
+        ['mousedown', startDraw],
+        ['mousemove', moveDraw],
+        ['mouseup',   endDraw],
+        ['touchstart', startDraw],
+        ['touchmove',  moveDraw],
+        ['touchend',   endDraw]
+    ];
+    evs.forEach(([ev, fn]) => canvas.addEventListener(ev, fn, { passive: false }));
+}
+
+function getPos(e) {
+    const r = canvas.getBoundingClientRect();
+    const pt = e.touches ? e.touches[0] : e;
+    return { x: pt.clientX - r.left, y: pt.clientY - r.top };
+}
+function startDraw(e) { if (e.type === 'touchstart') e.preventDefault(); isDrawing = true; moveDraw(e); }
+function moveDraw(e) {
+    if (!isDrawing) return;
+    if (e.type === 'touchmove') e.preventDefault();
+    const p = getPos(e);
+    ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.strokeStyle = '#1e3a8a';
+    ctx.lineTo(p.x, p.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(p.x, p.y);
+}
+function endDraw() { isDrawing = false; ctx.beginPath(); }
+function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+// ============================================================
+// FORM SUBMIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+    render();
+    document.getElementById('inspectionForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'ENVIANDO...';
+
+        let score = 0;
+        const respuestas = {};
+
+        for (let i = 1; i <= qCountTotal; i++) {
+            const sel = document.querySelector(`input[name="q${i}"]:checked`);
+            if (!sel) {
+                alert(`Falta evaluar el punto ${i}`);
+                btn.disabled = false;
+                btn.textContent = 'ENVIAR Y CALCULAR';
+                return;
             }
+            const row = document.querySelector(`input[name="q${i}"]`).closest('tr');
+            const obs = row.querySelector('textarea').value;
+            score += parseInt(sel.value);
+            respuestas[`q${i}`] = { pts: parseInt(sel.value), obs };
+        }
 
-            const pct = (score / (qCountTotal * 10)) * 100;
-            let nivel = "", colorM = "";
-            if(pct <= 65) { nivel = "INCUMPLE (INACEPTABLE)"; colorM = "bg-red-500 text-white"; }
-            else if(pct < 90) { nivel = "REGULAR (MEJORABLE)"; colorM = "bg-orange-500 text-white"; }
-            else { nivel = "CUMPLE (ACEPTABLE)"; colorM = "bg-green-600 text-white"; }
+        const pct = (score / (qCountTotal * 10)) * 100;
+        let nivel = '', colorM = '';
+        if      (pct <= 65) { nivel = 'INCUMPLE (INACEPTABLE)'; colorM = 'bg-red-500 text-white'; }
+        else if (pct < 90)  { nivel = 'REGULAR (MEJORABLE)';    colorM = 'bg-orange-500 text-white'; }
+        else                { nivel = 'CUMPLE (ACEPTABLE)';     colorM = 'bg-green-600 text-white'; }
 
-            const payload = {
-                fecha: document.getElementById('inputFecha').value,
-                bodega: document.getElementById('inputBodega').value,
-                bodeguero: document.getElementById('inputBodeguero').value,
-                regente: document.getElementById('inputRegente').value,
-                inspector: document.getElementById('inputInspector').value,
-                puntajeTotal: score, porcentaje: pct.toFixed(1), nivel: nivel, respuestas: respuestasEnvio
-            };
-
-            try {
-                // Envío asíncrono (no-cors para Google Scripts suele ser más rápido)
-                fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                
-                // Mostrar Resultado
-                document.getElementById('modalScore').textContent = pct.toFixed(1) + "%";
-                const badge = document.getElementById('modalStatus');
-                badge.textContent = nivel;
-                badge.className = `inline-block px-5 py-1.5 rounded-full text-xs font-bold uppercase shadow-sm ${colorM}`;
-                document.getElementById('successModal').style.display = 'flex';
-                
-            } catch (err) {
-                alert("Error al enviar. Verifique conexión.");
-            } finally {
-                btn.disabled = false; btn.textContent = "ENVIAR Y CALCULAR";
-            }
+        const payload = {
+            fecha:        document.getElementById('inputFecha').value,
+            bodega:       document.getElementById('inputBodega').value,
+            bodeguero:    document.getElementById('inputBodeguero').value,
+            regente:      document.getElementById('inputRegente').value,
+            inspector:    document.getElementById('inputInspector').value,
+            observacionesFinales: document.getElementById('observacionesFinales').value,
+            puntajeTotal: score,
+            porcentaje:   pct.toFixed(1),
+            nivel,
+            respuestas
         };
 
-        render();
-    </script>
+        try {
+            fetch(WEB_APP_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+            document.getElementById('modalScore').textContent = pct.toFixed(1) + '%';
+            const badge = document.getElementById('modalStatus');
+            badge.textContent = nivel;
+            badge.className = `inline-block px-5 py-1.5 rounded-full text-xs font-bold uppercase shadow-sm ${colorM}`;
+            document.getElementById('successModal').style.display = 'flex';
+        } catch (err) {
+            alert('Error al enviar. Verifique la conexión.');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'ENVIAR Y CALCULAR';
+        }
+    };
+});
+</script>
+
+<!-- Extra print CSS to force badge visibility -->
+<style>
+    @media print {
+        .print-score-badge, [id^="badge-"] {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+        }
+        [id^="printphotos-"] {
+            display: flex !important;
+        }
+        .no-print, .no-print * {
+            display: none !important;
+        }
+    }
+</style>
 </body>
 </html>
