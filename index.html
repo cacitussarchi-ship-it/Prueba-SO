@@ -715,14 +715,14 @@ async function generatePDF() {
 
         const element = document.getElementById('mainApp');
 
-        const canvas = await html2canvas(element, {
+        const canvasPdf = await html2canvas(element, {
             scale: 1.5,
             useCORS: true,
             allowTaint: true,
             backgroundColor: '#ffffff'
         });
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.75);
+        const imgData = canvasPdf.toDataURL('image/jpeg', 0.75);
 
         const pdf = new jsPDF('p', 'mm', 'a4');
 
@@ -730,7 +730,7 @@ async function generatePDF() {
         const pageHeight = 297;
 
         const imgWidth = pageWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        const imgHeight = (canvasPdf.height * imgWidth) / canvasPdf.width;
 
         let heightLeft = imgHeight;
         let position = 0;
@@ -740,6 +740,7 @@ async function generatePDF() {
         heightLeft -= pageHeight;
 
         while (heightLeft > 0) {
+
             position = heightLeft - imgHeight;
 
             pdf.addPage();
@@ -755,11 +756,128 @@ async function generatePDF() {
         pdf.save(`Inspeccion_${bodega}_${fecha}.pdf`);
 
     } catch (error) {
+
         console.error(error);
         alert('Error generando el PDF');
-    btn.innerHTML = originalText;
-    btn.disabled = false;
+
+    } finally {
+
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
 }
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => {
+
+    render();
+
+    document.getElementById('inspectionForm').onsubmit = async (e) => {
+
+        e.preventDefault();
+
+        const btn = document.getElementById('submitBtn');
+
+        btn.disabled = true;
+        btn.textContent = 'ENVIANDO...';
+
+        let score = 0;
+
+        const respuestas = {};
+
+        for (let i = 1; i <= qCountTotal; i++) {
+
+            const sel = document.querySelector(`input[name="q${i}"]:checked`);
+
+            if (!sel) {
+
+                alert(`Falta evaluar el punto ${i}`);
+
+                btn.disabled = false;
+                btn.textContent = 'ENVIAR Y CALCULAR';
+
+                return;
+            }
+
+            const row = document.querySelector(`input[name="q${i}"]`).closest('tr');
+
+            const obs = row.querySelector('textarea').value;
+
+            score += parseInt(sel.value);
+
+            respuestas[`q${i}`] = {
+                pts: parseInt(sel.value),
+                obs
+            };
+        }
+
+        const pct = (score / (qCountTotal * 10)) * 100;
+
+        let nivel = '';
+        let colorM = '';
+
+        if (pct <= 65) {
+
+            nivel = 'INCUMPLE (INACEPTABLE)';
+            colorM = 'bg-red-500 text-white';
+
+        } else if (pct < 90) {
+
+            nivel = 'REGULAR (MEJORABLE)';
+            colorM = 'bg-orange-500 text-white';
+
+        } else {
+
+            nivel = 'CUMPLE (ACEPTABLE)';
+            colorM = 'bg-green-600 text-white';
+        }
+
+        const payload = {
+
+            fecha: document.getElementById('inputFecha').value,
+            bodega: document.getElementById('inputBodega').value,
+            bodeguero: document.getElementById('inputBodeguero').value,
+            regente: document.getElementById('inputRegente').value,
+            inspector: document.getElementById('inputInspector').value,
+            observacionesFinales: document.getElementById('observacionesFinales').value,
+            puntajeTotal: score,
+            porcentaje: pct.toFixed(1),
+            nivel,
+            respuestas
+        };
+
+        try {
+
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
+
+            document.getElementById('modalScore').textContent = pct.toFixed(1) + '%';
+
+            const badge = document.getElementById('modalStatus');
+
+            badge.textContent = nivel;
+
+            badge.className = `inline-block px-5 py-1.5 rounded-full text-xs font-bold uppercase shadow-sm ${colorM}`;
+
+            document.getElementById('successModal').style.display = 'flex';
+
+        } catch (err) {
+
+            alert('Error al enviar. Verifique la conexión.');
+
+        } finally {
+
+            btn.disabled = false;
+            btn.textContent = 'ENVIAR Y CALCULAR';
+        }
+    };
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     render();
     document.getElementById('inspectionForm').onsubmit = async (e) => {
