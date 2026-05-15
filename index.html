@@ -882,50 +882,47 @@ document.addEventListener('DOMContentLoaded', () => {
             respuestas
         };
 
-        try {
+       try {
 
-            // =========================
-            // ENVIO
-            // =========================
+    // =========================
+    // ENVIO GOOGLE SHEETS
+    // =========================
 
-            await fetch(WEB_APP_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify(payload)
-            });
+    fetch(WEB_APP_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(payload)
+    }).catch(err => console.log(err));
 
-            // =========================
-            // MODAL RESULTADO
-            // =========================
+} catch (err) {
 
-            document.getElementById('modalScore').textContent =
-                pct.toFixed(1) + '%';
+    console.log(err);
+}
 
-            const badge =
-                document.getElementById('modalStatus');
+// =========================
+// MOSTRAR RESULTADO SIEMPRE
+// =========================
 
-            badge.textContent = nivel;
+document.getElementById('modalScore').textContent =
+    pct.toFixed(1) + '%';
 
-            badge.className =
-                `inline-block px-5 py-1.5 rounded-full text-xs font-bold uppercase shadow-sm ${colorM}`;
+const badge =
+    document.getElementById('modalStatus');
 
-            document.getElementById('successModal').style.display =
-                'flex';
+badge.textContent = nivel;
 
-        } catch (err) {
+badge.className =
+    `inline-block px-5 py-1.5 rounded-full text-xs font-bold uppercase shadow-sm ${colorM}`;
 
-            console.error(err);
+document.getElementById('successModal').style.display =
+    'flex';
 
-            alert('Error al enviar. Verifique la conexión.');
+} finally {
 
-        } finally {
+    btn.disabled = false;
 
-            btn.disabled = false;
-
-            btn.textContent = 'ENVIAR Y CALCULAR';
-        }
-    };
-});
+    btn.textContent = 'ENVIAR Y CALCULAR';
+}
 </script>
 
 <!-- Extra print CSS to force badge visibility -->
