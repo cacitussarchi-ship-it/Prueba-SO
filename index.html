@@ -882,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
             respuestas
         };
 
-       try {
+      try {
 
     // =========================
     // ENVIO GOOGLE SHEETS
@@ -917,14 +917,13 @@ badge.className =
 document.getElementById('successModal').style.display =
     'flex';
 
-} finally {
+// =========================
+// REACTIVAR BOTON
+// =========================
 
-    btn.disabled = false;
+btn.disabled = false;
 
-    btn.textContent = 'ENVIAR Y CALCULAR';
-       }
-    };
-});
+btn.textContent = 'ENVIAR Y CALCULAR';
 </script>
 
 <!-- Extra print CSS to force badge visibility -->
