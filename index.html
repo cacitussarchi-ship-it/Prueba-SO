@@ -3,15 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Inspección de Bodegas - SO Soluciones</title>
-
-    <!-- TAILWIND -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- HTML2PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         /* ===== PRINT STYLES ===== */
         @media print {
@@ -204,7 +199,7 @@
 
             <!-- ACTIONS -->
             <div class="mt-10 flex justify-end gap-4 no-print border-t pt-8">
-                <button type="button" onclick="generatePDF()" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-all uppercase text-xs">🖨️ Generar PDF</button>
+                <button type="button" onclick="generatePDF()" class="bg-gray-500 text-white font-bold py-3 px-8 rounded-lg hover:bg-gray-600 transition-all uppercase text-xs">🖨️ PDF / Imprimir</button>
                 <button type="submit" id="submitBtn" class="bg-blue-700 hover:bg-blue-800 text-white font-black py-3 px-12 rounded-lg shadow-xl transition-all uppercase text-sm tracking-widest">Enviar y Calcular</button>
             </div>
         </form>
@@ -334,49 +329,31 @@ const dataConfig = [
 const photoStore = {};
 
 function addPhotos(idx, files) {
-
-    if (!photoStore[idx]) photoStore[idx] = [];
-
-    const remaining = 5 - photoStore[idx].length;
-
-    const toAdd = Array.from(files).slice(0, remaining);
-
-    toAdd.forEach(file => {
-
+   async function compressImage(file, maxWidth = 1280, quality = 0.7) {
+    return new Promise((resolve) => {
         const reader = new FileReader();
 
-        reader.onload = function(event) {
-
+        reader.onload = (event) => {
             const img = new Image();
 
-            img.onload = function() {
-
+            img.onload = () => {
                 const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-
                 let width = img.width;
                 let height = img.height;
 
-                // REDUCIR TAMAÑO
-                const maxWidth = 1200;
-
                 if (width > maxWidth) {
-                    height = height * (maxWidth / width);
+                    height = (height * maxWidth) / width;
                     width = maxWidth;
                 }
 
                 canvas.width = width;
                 canvas.height = height;
 
+                const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // COMPRESIÓN
-                const compressedImage = canvas.toDataURL('image/jpeg', 0.7);
-
-                photoStore[idx].push(compressedImage);
-
-                renderPhotoPreviews(idx);
-                updatePrintPhotos(idx);
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+                resolve(compressedDataUrl);
             };
 
             img.src = event.target.result;
@@ -384,6 +361,21 @@ function addPhotos(idx, files) {
 
         reader.readAsDataURL(file);
     });
+}
+
+async function addPhotos(idx, files) {
+    if (!photoStore[idx]) photoStore[idx] = [];
+
+    const remaining = 5 - photoStore[idx].length;
+    const toAdd = Array.from(files).slice(0, remaining);
+
+    for (const file of toAdd) {
+        const compressed = await compressImage(file);
+        photoStore[idx].push(compressed);
+    }
+
+    renderPhotoPreviews(idx);
+    updatePrintPhotos(idx);
 }
 
 function removePhoto(idx, photoIdx) {
@@ -397,23 +389,53 @@ function removePhoto(idx, photoIdx) {
 function renderPhotoPreviews(idx) {
     const container = document.getElementById(`preview-${idx}`);
     if (!container) return;
+
     container.innerHTML = '';
+
     (photoStore[idx] || []).forEach((src, pi) => {
         const wrap = document.createElement('div');
+
         wrap.className = 'photo-preview-item';
+
         wrap.innerHTML = `
-            <img src="${src}" alt="foto ${pi+1}">
-            <button type="button" class="photo-del-btn no-print" onclick="removePhoto(${idx},${pi})">✕</button>
+            <img src="${src}" alt="foto ${pi + 1}">
+
+            <button
+                type="button"
+                class="photo-del-btn no-print"
+                onclick="removePhoto(${idx}, ${pi})">
+                ✕
+            </button>
         `;
+
         container.appendChild(wrap);
     });
-    // Update add button state
-    const btn = document.getElementById(`addbtn-${idx}`);
-    if (btn) {
-        const count = (photoStore[idx] || []).length;
-        btn.textContent = count >= 5 ? '📷 Máx. fotos alcanzado' : `📷 AGREGAR FOTO ${count > 0 ? `(${count}/5)` : ''}`;
-        btn.disabled = count >= 5;
-        btn.style.opacity = count >= 5 ? '0.5' : '1';
+
+    const count = (photoStore[idx] || []).length;
+
+    const uploadBtn = document.getElementById(`uploadbtn-${idx}`);
+    const cameraBtn = document.getElementById(`camerabtn-${idx}`);
+
+    if (count >= 5) {
+        if (uploadBtn) {
+            uploadBtn.style.opacity = '0.5';
+            uploadBtn.style.pointerEvents = 'none';
+        }
+
+        if (cameraBtn) {
+            cameraBtn.style.opacity = '0.5';
+            cameraBtn.style.pointerEvents = 'none';
+        }
+    } else {
+        if (uploadBtn) {
+            uploadBtn.style.opacity = '1';
+            uploadBtn.style.pointerEvents = 'auto';
+        }
+
+        if (cameraBtn) {
+            cameraBtn.style.opacity = '1';
+            cameraBtn.style.pointerEvents = 'auto';
+        }
     }
 }
 
@@ -501,13 +523,40 @@ function render() {
 
                     <!-- Photo upload zone (no-print) -->
                     <div class="photo-upload-zone no-print">
-                        <label id="addbtn-${i}" class="block bg-white text-gray-500 text-[9px] font-bold p-1.5 rounded border border-dashed border-gray-400 text-center cursor-pointer hover:bg-blue-50 transition-colors">
-                            📷 AGREGAR FOTO
-                            <input type="file" accept="image/*" multiple class="hidden">
-                            
-                        </label>
-                        <div id="preview-${1}" class="photo-grid-preview mt-1"></div>
-                    </div>
+
+    <div class="flex gap-2 mb-2 flex-wrap">
+
+        <!-- SUBIR FOTO -->
+        <label id="uploadbtn-${i}"
+            class="flex-1 bg-blue-50 text-blue-700 text-[10px] font-bold p-2 rounded border border-blue-300 text-center cursor-pointer hover:bg-blue-100 transition-colors">
+            📁 SUBIR FOTO
+
+            <input
+                type="file"
+                accept="image/*"
+                multiple
+                class="hidden"
+                onchange="addPhotos(${i}, this.files); this.value=''">
+        </label>
+
+        <!-- TOMAR FOTO -->
+        <label id="camerabtn-${i}"
+            class="flex-1 bg-green-50 text-green-700 text-[10px] font-bold p-2 rounded border border-green-300 text-center cursor-pointer hover:bg-green-100 transition-colors">
+            📸 TOMAR FOTO
+
+            <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                multiple
+                class="hidden"
+                onchange="addPhotos(${i}, this.files); this.value=''">
+        </label>
+
+    </div>
+
+    <div id="preview-${i}" class="photo-grid-preview mt-1"></div>
+</div>
 
                     <!-- Print photos container (hidden on screen, shown in print) -->
                     <div id="printphotos-${i}" class="photo-print-container" style="display:none;flex-wrap:wrap;gap:5px;margin-top:4px;"></div>
@@ -581,103 +630,6 @@ window.addEventListener('afterprint', () => {
 });
 
 // ============================================================
-// GENERAR PDF REAL
-// ============================================================
-
-async function generatePDF() {
-
-    const originalTitle = document.title;
-
-    document.title = 'Inspeccion_Bodega';
-
-    const buttons = document.querySelectorAll('button');
-
-    buttons.forEach(btn => {
-        btn.disabled = true;
-    });
-
-    // Mostrar fotos para PDF
-    for (let i = 1; i <= qCountTotal; i++) {
-
-        const printPhotos = document.getElementById(`printphotos-${i}`);
-
-        if (printPhotos) {
-            printPhotos.style.display = 'flex';
-        }
-
-        const badge = document.getElementById(`badge-${i}`);
-
-        if (badge) {
-            badge.style.display = 'flex';
-            badge.style.flexDirection = 'column';
-            badge.style.alignItems = 'center';
-        }
-    }
-
-    const element = document.getElementById('mainApp');
-
-    const options = {
-
-        margin: 0.3,
-
-        filename: `inspeccion_${Date.now()}.pdf`,
-
-        image: {
-            type: 'jpeg',
-            quality: 0.92
-        },
-
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            scrollY: 0
-        },
-
-        jsPDF: {
-            unit: 'in',
-            format: 'letter',
-            orientation: 'portrait'
-        },
-
-        pagebreak: {
-            mode: ['avoid-all', 'css', 'legacy']
-        }
-    };
-
-    try {
-
-        await html2pdf()
-            .set(options)
-            .from(element)
-            .save();
-
-    } catch (error) {
-
-        console.error('Error PDF:', error);
-
-        alert('Error generando PDF');
-
-    } finally {
-
-        // ocultar nuevamente
-        for (let i = 1; i <= qCountTotal; i++) {
-
-            const printPhotos = document.getElementById(`printphotos-${i}`);
-
-            if (printPhotos) {
-                printPhotos.style.display = 'none';
-            }
-        }
-
-        buttons.forEach(btn => {
-            btn.disabled = false;
-        });
-
-        document.title = originalTitle;
-    }
-}
-// ============================================================
 // SIGNATURE PAD
 // ============================================================
 let canvas, ctx, isDrawing = false;
@@ -716,6 +668,66 @@ function clearSignature() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 // ============================================================
 // FORM SUBMIT
 // ============================================================
+async function generatePDF() {
+
+    const { jsPDF } = window.jspdf;
+
+    const btn = document.querySelector('[onclick="generatePDF()"]');
+
+    const originalText = btn.innerHTML;
+
+    btn.innerHTML = 'GENERANDO PDF...';
+    btn.disabled = true;
+
+    try {
+
+        window.scrollTo(0, 0);
+
+        const element = document.getElementById('mainApp');
+
+        const canvas = await html2canvas(element, {
+            scale: 1.5,
+            useCORS: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff'
+        });
+
+        const imgData = canvas.toDataURL('image/jpeg', 0.75);
+
+        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        const pageWidth = 210;
+        const pageHeight = 297;
+
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, '', 'FAST');
+
+        heightLeft -= pageHeight;
+
+        while (heightLeft > 0) {
+            position = heightLeft - imgHeight;
+
+            pdf.addPage();
+
+            pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight, '', 'FAST');
+
+            heightLeft -= pageHeight;
+        }
+
+        const fecha = document.getElementById('inputFecha').value || 'sin-fecha';
+        const bodega = document.getElementById('inputBodega').value || 'bodega';
+
+        pdf.save(`Inspeccion_${bodega}_${fecha}.pdf`);
+
+    } catch (error) {
+        console.error(error);
+        alert('Error generando el PDF');
+}
 document.addEventListener('DOMContentLoaded', () => {
     render();
     document.getElementById('inspectionForm').onsubmit = async (e) => {
